@@ -1,0 +1,290 @@
+
+{% extends "base.html" %}
+
+{% block title %}Wiki - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+/* CONTENEUR PRINCIPAL */
+.wiki-home {
+    max-width: 1150px;
+    margin: 40px auto;
+    padding: 20px;
+    color: #f2f8ff;
+}
+
+/* EN-TÊTE */
+.wiki-header {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.wiki-header h1 {
+    color: #70eaff;
+    font-size: 42px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 15px rgba(0, 190, 255, 0.45);
+}
+
+.wiki-header p {
+    color: #c5d7e8;
+    font-size: 16px;
+}
+
+/* GRILLE */
+.wiki-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 22px;
+}
+
+/* CARTES */
+.wiki-card {
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+
+    background: linear-gradient(
+        145deg,
+        rgba(7, 27, 55, 0.94),
+        rgba(2, 12, 31, 0.97)
+    );
+
+    border: 1px solid rgba(80, 190, 235, 0.35);
+    border-radius: 17px;
+    padding: 24px;
+
+    color: #eaf8ff;
+    text-decoration: none;
+
+    position: relative;
+    overflow: hidden;
+
+    box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);
+    transition: all 0.25s ease;
+}
+
+/* REFLET LUMINEUX */
+.wiki-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(100, 225, 255, 0.08),
+        transparent
+    );
+
+    transform: skewX(-20deg);
+    transition: left 0.5s ease;
+    pointer-events: none;
+}
+
+.wiki-card:hover::before {
+    left: 150%;
+}
+
+/* SURVOL */
+.wiki-card:hover {
+    transform: translateY(-6px);
+    border-color: #70eaff;
+
+    box-shadow:
+        0 0 16px rgba(0, 190, 255, 0.25),
+        0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* ICÔNES */
+.wiki-card .icon {
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 32px;
+
+    background: linear-gradient(
+        145deg,
+        rgba(12, 55, 88, 0.85),
+        rgba(4, 20, 43, 0.95)
+    );
+
+    border: 1px solid rgba(100, 220, 255, 0.45);
+    border-radius: 13px;
+
+    margin-bottom: 17px;
+
+    box-shadow: 0 0 12px rgba(0, 190, 255, 0.15);
+    transition: 0.25s ease;
+}
+
+.wiki-card:hover .icon {
+    border-color: #70eaff;
+    box-shadow: 0 0 18px rgba(0, 190, 255, 0.3);
+    transform: scale(1.05);
+}
+
+/* TITRES */
+.wiki-card h2 {
+    color: #80eaff;
+    font-size: 21px;
+    margin: 0 0 10px;
+    text-shadow: 0 0 8px rgba(0, 180, 255, 0.25);
+}
+
+/* DESCRIPTIONS */
+.wiki-card p {
+    color: #c5d7e8;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* STATUT */
+.wiki-status {
+    display: inline-block;
+    margin-top: auto;
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    background: rgba(0, 180, 255, 0.13);
+    border: 1px solid rgba(80, 210, 255, 0.4);
+
+    color: #80eaff;
+    font-size: 12px;
+    font-weight: bold;
+
+    margin-top: 17px;
+}
+
+/* CARTES INDISPONIBLES */
+.wiki-card.disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.wiki-card.disabled:hover {
+    transform: none;
+    box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);
+    border-color: rgba(80, 190, 235, 0.35);
+}
+
+.wiki-card.disabled .wiki-status {
+    background: rgba(150, 150, 150, 0.12);
+    border-color: rgba(180, 180, 180, 0.3);
+    color: #c5cbd2;
+}
+
+/* COPYRIGHT */
+.wiki-copyright {
+    text-align: center;
+    color: rgba(210, 230, 255, 0.65);
+    font-size: 13px;
+    padding: 20px;
+    margin-top: 25px;
+}
+
+/* PETITS ÉCRANS */
+@media (max-width: 600px) {
+    .wiki-home {
+        margin: 20px auto;
+        padding: 12px;
+    }
+
+    .wiki-header h1 {
+        font-size: 32px;
+    }
+
+    .wiki-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="wiki-home">
+
+    <div class="wiki-header">
+        <h1>📚 Wiki PokeOrigins</h1>
+        <p>
+            Retrouve toutes les informations pour progresser
+            sur notre serveur Minecraft PokeOrigins.
+        </p>
+    </div>
+
+    <div class="wiki-grid">
+
+        <a href="/wiki/pokedex" class="wiki-card">
+            <div class="icon">📖</div>
+            <h2>Pokédex</h2>
+            <p>Découvre les Pokémon, leurs types, leurs statistiques et leurs évolutions.</p>
+            <span class="wiki-status">Disponible</span>
+        </a>
+
+        <a href="/wiki/commandes" class="wiki-card">
+            <div class="icon">⌨️</div>
+            <h2>Commandes</h2>
+            <p>Retrouve les commandes utiles du serveur et leurs explications.</p>
+            <span class="wiki-status">Disponible</span>
+        </a>
+
+        <a href="/wiki/guides" class="wiki-card">
+            <div class="icon">🧭</div>
+            <h2>Guide du débutant</h2>
+            <p>Apprends les bases pour commencer ton aventure sur PokeOrigins.</p>
+            <span class="wiki-status">Disponible</span>
+        </a>
+
+        <a href="/wiki/economie" class="wiki-card">
+            <div class="icon">💰</div>
+            <h2>Économie</h2>
+            <p>Découvre le fonctionnement des Nayos et du commerce.</p>
+            <span class="wiki-status">Disponible</span>
+        </a>
+
+        <a href="/wiki/arenes" class="wiki-card">
+            <div class="icon">🏟️</div>
+            <h2>Arènes</h2>
+            <p>Découvre les arènes, leurs champions et leurs défis Pokémon.</p>
+            <span class="wiki-status">Disponible</span>
+        </a>
+
+        <div class="wiki-card disabled">
+            <div class="icon">🎯</div>
+            <h2>Quêtes</h2>
+            <p>Consulte les informations sur les missions et les objectifs.</p>
+            <span class="wiki-status">Bientôt disponible</span>
+        </div>
+
+        <div class="wiki-card disabled">
+            <div class="icon">🎒</div>
+            <h2>Objets et équipements</h2>
+            <p>Découvre les objets et équipements disponibles sur le serveur.</p>
+            <span class="wiki-status">Bientôt disponible</span>
+        </div>
+
+        <a href="/wiki/reglement" class="wiki-card">
+            <div class="icon">📜</div>
+            <h2>Règlement</h2>
+            <p>Consulte les règles à respecter pour jouer sur PokeOrigins.</p>
+            <span class="wiki-status">Disponible</span>
+        </a>
+
+    </div>
+</div>
+
+<footer class="wiki-copyright">
+    © 2026 PokeOrigins — Tous droits réservés.
+</footer>
+
+{% endblock %}

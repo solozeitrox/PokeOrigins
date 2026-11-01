@@ -1,0 +1,362 @@
+
+{% extends "base.html" %}
+
+{% block title %}Vote - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.vote-page {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    color: white;
+}
+
+/* EN-TÊTE */
+.vote-header {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.vote-header .main-icon {
+    width: 95px;
+    height: 95px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    border-radius: 25px;
+    background: rgba(0, 150, 255, 0.15);
+    border: 2px solid #35caff;
+    box-shadow: 0 0 25px rgba(0, 170, 255, 0.3);
+}
+
+.vote-header h1 {
+    font-size: 42px;
+    color: #70eaff;
+    margin-bottom: 15px;
+    text-shadow: 0 0 15px rgba(0, 190, 255, 0.45);
+}
+
+.vote-header p {
+    color: #d0e5f5;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* INFORMATIONS */
+.vote-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 45px;
+}
+
+.info-card {
+    padding: 22px;
+    text-align: center;
+    background: rgba(3, 25, 65, 0.82);
+    border: 1px solid rgba(60, 190, 255, 0.45);
+    border-radius: 16px;
+}
+
+.info-card .icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.info-card h3 {
+    color: #70eaff;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.info-card p {
+    color: #d0e5f5;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* TITRES DE SECTIONS */
+.section-title {
+    text-align: center;
+    color: #70eaff;
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+/* CARTES DE VOTE */
+.vote-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 55px;
+}
+
+.vote-card {
+    min-height: 245px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background:
+        linear-gradient(145deg,
+        rgba(5, 35, 75, 0.85),
+        rgba(0, 12, 35, 0.92));
+    border: 1px solid rgba(60, 190, 255, 0.5);
+    border-radius: 18px;
+    transition: 0.3s ease;
+}
+
+.vote-card:hover {
+    transform: translateY(-6px);
+    border-color: #70eaff;
+    box-shadow: 0 0 25px rgba(0, 180, 255, 0.25);
+}
+
+.vote-card .vote-icon {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    border-radius: 17px;
+    background: rgba(0, 150, 255, 0.15);
+    border: 1px solid rgba(70, 200, 255, 0.5);
+    margin-bottom: 18px;
+}
+
+.vote-card h3 {
+    color: #80eaff;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.vote-card p {
+    color: #d5e5f5;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.vote-status {
+    margin-top: auto;
+    padding: 8px 17px;
+    border-radius: 20px;
+    color: #ffda75;
+    background: rgba(255, 180, 0, 0.12);
+    border: 1px solid rgba(255, 190, 0, 0.4);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* RÉCOMPENSES */
+.reward-section {
+    padding: 30px;
+    margin-bottom: 40px;
+    text-align: center;
+    background: rgba(3, 25, 65, 0.85);
+    border: 1px solid rgba(60, 190, 255, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 140, 255, 0.12);
+}
+
+.reward-section h2 {
+    color: #70eaff;
+    font-size: 27px;
+    margin-bottom: 12px;
+}
+
+.reward-section > p {
+    color: #d0e5f5;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.reward-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.reward-card {
+    padding: 20px;
+    background: rgba(0, 120, 220, 0.12);
+    border: 1px solid rgba(60, 190, 255, 0.3);
+    border-radius: 14px;
+}
+
+.reward-card .reward-icon {
+    font-size: 35px;
+    margin-bottom: 12px;
+}
+
+.reward-card h3 {
+    color: #80eaff;
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.reward-card p {
+    color: #d0e5f5;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* NOTE */
+.vote-note {
+    text-align: center;
+    color: #a9c5dc;
+    font-size: 13px;
+    margin-bottom: 35px;
+}
+
+/* COPYRIGHT */
+.vote-copyright {
+    position: fixed;
+    bottom: 10px;
+    left: 20px;
+    color: rgba(210, 230, 255, 0.65);
+    font-size: 13px;
+    z-index: 1000;
+}
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+    .vote-grid,
+    .vote-info,
+    .reward-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .vote-header h1 {
+        font-size: 32px;
+    }
+}
+</style>
+
+<main class="vote-page">
+
+    <!-- EN-TÊTE -->
+    <section class="vote-header">
+        <div class="main-icon">🗳️</div>
+
+        <h1>Vote pour PokeOrigins</h1>
+
+        <p>
+            Soutiens PokeOrigins en votant sur les plateformes Minecraft.
+            <br>
+            Chaque vote contribue au développement de notre serveur !
+        </p>
+    </section>
+
+    <!-- INFORMATIONS -->
+    <section class="vote-info">
+
+        <div class="info-card">
+            <div class="icon">❤️</div>
+            <h3>Soutenir le serveur</h3>
+            <p>Aide PokeOrigins à se faire connaître auprès de nouveaux joueurs.</p>
+        </div>
+
+        <div class="info-card">
+            <div class="icon">🎁</div>
+            <h3>Récompenses</h3>
+            <p>Des récompenses seront disponibles pour les joueurs qui votent.</p>
+        </div>
+
+        <div class="info-card">
+            <div class="icon">⭐</div>
+            <h3>Participer</h3>
+            <p>Chaque vote compte pour faire grandir notre communauté.</p>
+        </div>
+
+    </section>
+
+    <!-- PLATEFORMES -->
+    <h2 class="section-title">🌐 Sites de vote</h2>
+
+    <section class="vote-grid">
+
+        <div class="vote-card">
+            <div class="vote-icon">🌍</div>
+            <h3>Plateforme de vote 1</h3>
+            <p>
+                Retrouve PokeOrigins sur cette plateforme
+                et apporte ton soutien au serveur.
+            </p>
+            <span class="vote-status">Lien bientôt disponible</span>
+        </div>
+
+        <div class="vote-card">
+            <div class="vote-icon">🏆</div>
+            <h3>Plateforme de vote 2</h3>
+            <p>
+                Vote pour PokeOrigins et aide le serveur
+                à gagner en visibilité.
+            </p>
+            <span class="vote-status">Lien bientôt disponible</span>
+        </div>
+
+        <div class="vote-card">
+            <div class="vote-icon">⭐</div>
+            <h3>Plateforme de vote 3</h3>
+            <p>
+                Soutiens notre communauté grâce
+                à un nouveau vote.
+            </p>
+            <span class="vote-status">Lien bientôt disponible</span>
+        </div>
+
+    </section>
+
+    <!-- RÉCOMPENSES -->
+    <section class="reward-section">
+
+        <h2>🎁 Les récompenses de vote</h2>
+
+        <p>
+            Chaque vote pourra te permettre de récupérer
+            des récompenses directement en jeu.
+        </p>
+
+        <div class="reward-grid">
+
+            <div class="reward-card">
+                <div class="reward-icon">💰</div>
+                <h3>Nayos</h3>
+                <p>Des récompenses économiques à dépenser sur le serveur.</p>
+            </div>
+
+            <div class="reward-card">
+                <div class="reward-icon">🎒</div>
+                <h3>Objets</h3>
+                <p>Des objets utiles pour accompagner ton aventure.</p>
+            </div>
+
+            <div class="reward-card">
+                <div class="reward-icon">✨</div>
+                <h3>Bonus spéciaux</h3>
+                <p>Des surprises et des bonus pour les joueurs participants.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <p class="vote-note">
+        Les plateformes, les récompenses et les conditions de vote seront
+        configurées prochainement.
+    </p>
+
+</main>
+
+<div class="vote-copyright">
+    © 2026 PokeOrigins — Tous droits réservés.
+</div>
+
+{% endblock %}

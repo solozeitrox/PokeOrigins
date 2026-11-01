@@ -1,0 +1,94 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Économie - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.economie-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    color: white;
+}
+
+.economie-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.economie-header h1 {
+    color: #f5c542;
+    font-size: 38px;
+}
+
+.economie-header p {
+    color: #ccc;
+}
+
+.economie-card {
+    background: rgba(25, 35, 55, 0.95);
+    border: 1px solid rgba(245, 197, 66, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 18px;
+}
+
+.economie-card h2 {
+    color: #f5c542;
+    margin-top: 0;
+}
+
+.economie-card p {
+    color: #ccc;
+    line-height: 1.7;
+}
+
+.nayos {
+    color: #f5c542;
+    font-weight: bold;
+}
+</style>
+
+<div class="economie-page">
+
+    <div class="economie-header">
+        <h1>💰 Économie de PokeOrigins</h1>
+        <p>Découvre la monnaie utilisée sur le serveur.</p>
+    </div>
+
+    <div class="economie-card">
+        <h2>🪙 Les Nayos</h2>
+        <p>
+            Les <span class="nayos">Nayos</span> sont la monnaie de PokeOrigins.
+            Ils constituent la base de l'économie du serveur.
+        </p>
+    </div>
+
+    <div class="economie-card">
+        <h2>🛒 Achats et ventes</h2>
+        <p>
+            Cette section présentera les moyens d'acheter et de vendre
+            des objets sur le serveur lorsque les systèmes seront définis.
+        </p>
+    </div>
+
+    <div class="economie-card">
+        <h2>💡 Comment gagner des Nayos ?</h2>
+        <p>
+            Les différentes méthodes pour obtenir des Nayos seront
+            ajoutées ici au fur et à mesure du développement du serveur.
+        </p>
+    </div>
+
+    <div class="economie-card">
+        <h2>📊 Conseils</h2>
+        <p>
+            Les astuces pour bien gérer tes Nayos seront bientôt disponibles.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

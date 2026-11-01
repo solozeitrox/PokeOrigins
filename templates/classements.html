@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}Classements - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.classements-container {
+    width: 92%;
+    max-width: 1250px;
+    margin: auto;
+    padding: 45px 0 70px;
+    color: white;
+}
+
+/* TITRE */
+
+.classements-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.classements-header h1 {
+    font-size: clamp(30px, 4vw, 46px);
+    color: #45eaff;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.4);
+    margin-bottom: 12px;
+}
+
+.classements-header p {
+    color: #d1e5ff;
+    font-size: 16px;
+}
+
+/* NAVIGATION DES CATÉGORIES */
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 35px;
+}
+
+.category-button {
+    padding: 13px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(60, 180, 255, 0.5);
+
+    background: rgba(3, 25, 65, 0.9);
+    color: white;
+
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.category-button:hover,
+.category-button.active {
+    background: rgba(0, 175, 255, 0.25);
+    border-color: #45eaff;
+    color: #45eaff;
+    box-shadow: 0 0 15px rgba(0, 190, 255, 0.2);
+}
+
+/* TITRE DU CLASSEMENT */
+
+.ranking-panel {
+    background: rgba(3, 24, 62, 0.91);
+    border: 1px solid rgba(40, 170, 255, 0.6);
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 0 25px rgba(0, 120, 255, 0.15);
+    backdrop-filter: blur(8px);
+}
+
+.ranking-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.ranking-icon {
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: rgba(0, 190, 255, 0.15);
+    border: 1px solid #20cfff;
+    font-size: 27px;
+}
+
+.ranking-title h2 {
+    font-size: 25px;
+    color: #45eaff;
+}
+
+.ranking-title p {
+    color: #b9d5f5;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* PODIUM */
+
+.podium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    align-items: end;
+    margin: 35px auto;
+    max-width: 800px;
+}
+
+.podium-card {
+    text-align: center;
+    padding: 25px 12px;
+    background: rgba(0, 90, 170, 0.13);
+    border: 1px solid rgba(60, 170, 255, 0.4);
+    border-radius: 18px;
+}
+
+.podium-card.first {
+    border-color: #ffc83d;
+    background: rgba(255, 190, 0, 0.09);
+    padding-top: 38px;
+}
+
+.podium-medal {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.podium-position {
+    color: #45eaff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.podium-card.first .podium-position {
+    color: #ffc83d;
+}
+
+.podium-player {
+    font-size: 17px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.podium-value {
+    color: #b9d5f5;
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+/* TABLEAU */
+
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+.ranking-table th {
+    text-align: left;
+    padding: 16px;
+    color: #45eaff;
+    background: rgba(0, 130, 210, 0.15);
+    border-bottom: 1px solid rgba(50, 180, 255, 0.4);
+}
+
+.ranking-table td {
+    padding: 16px;
+    border-bottom: 1px solid rgba(100, 170, 230, 0.15);
+    color: #e0edff;
+}
+
+/* ÉTAT VIDE */
+
+.empty-ranking {
+    text-align: center;
+    padding: 45px 20px;
+    margin-top: 20px;
+    background: rgba(0, 100, 190, 0.10);
+    border: 1px dashed rgba(65, 200, 255, 0.5);
+    border-radius: 16px;
+}
+
+.empty-ranking .empty-icon {
+    font-size: 45px;
+    margin-bottom: 15px;
+}
+
+.empty-ranking h3 {
+    color: #45eaff;
+    font-size: 21px;
+    margin-bottom: 10px;
+}
+
+.empty-ranking p {
+    color: #c3d9f5;
+    line-height: 1.7;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+    .ranking-panel {
+        padding: 20px 13px;
+    }
+
+    .podium {
+        gap: 8px;
+    }
+
+    .podium-card {
+        padding: 18px 5px;
+    }
+
+    .podium-card.first {
+        padding-top: 25px;
+    }
+
+    .podium-player {
+        font-size: 13px;
+    }
+
+    .category-button {
+        padding: 11px 13px;
+        font-size: 12px;
+    }
+
+    .ranking-table th,
+    .ranking-table td {
+        padding: 11px 7px;
+        font-size: 12px;
+    }
+}
+</style>
+
+<main class="classements-container">
+
+    <div class="classements-header">
+        <h1>🏆 Classements PokeOrigins</h1>
+        <p>Découvre les meilleurs joueurs de notre serveur.</p>
+    </div>
+
+    <!-- CATÉGORIES -->
+
+    <div class="categories">
+
+        <button class="category-button active"
+                onclick="changeRanking('richesse', this)">
+            💰 Richesse
+        </button>
+
+        <button class="category-button"
+                onclick="changeRanking('temps', this)">
+            ⏱️ Temps de jeu
+        </button>
+
+        <button class="category-button"
+                onclick="changeRanking('captures', this)">
+            🔴 Pokémon capturés
+        </button>
+
+        <button class="category-button"
+                onclick="changeRanking('combats', this)">
+            ⚔️ Combats
+        </button>
+
+        <button class="category-button"
+                onclick="changeRanking('vaincus', this)">
+            🎯 Pokémon vaincus
+        </button>
+
+        <button class="category-button"
+                onclick="changeRanking('pokedex', this)">
+            📖 Pokédex
+        </button>
+
+        <button class="category-button"
+                onclick="changeRanking('niveau', this)">
+            ⭐ Niveau
+        </button>
+
+    </div>
+
+    <!-- CLASSEMENT -->
+
+    <section class="ranking-panel">
+
+        <div class="ranking-title">
+
+            <div class="ranking-icon" id="rankingIcon">💰</div>
+
+            <div>
+                <h2 id="rankingName">Classement Richesse</h2>
+                <p id="rankingDescription">
+                    Les joueurs possédant le plus de pièces.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- PODIUM -->
+
+        <div class="podium">
+
+            <div class="podium-card second">
+                <div class="podium-medal">🥈</div>
+                <div class="podium-position">2e PLACE</div>
+                <div class="podium-player">À déterminer</div>
+                <div class="podium-value">---</div>
+            </div>
+
+            <div class="podium-card first">
+                <div class="podium-medal">🥇</div>
+                <div class="podium-position">1re PLACE</div>
+                <div class="podium-player">À déterminer</div>
+                <div class="podium-value">---</div>
+            </div>
+
+            <div class="podium-card third">
+                <div class="podium-medal">🥉</div>
+                <div class="podium-position">3e PLACE</div>
+                <div class="podium-player">À déterminer</div>
+                <div class="podium-value">---</div>
+            </div>
+
+        </div>
+
+        <!-- TABLEAU -->
+
+        <table class="ranking-table">
+
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Joueur</th>
+                    <th>Statistique</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td colspan="3">
+                        <div class="empty-ranking">
+
+                            <div class="empty-icon">📊</div>
+
+                            <h3>Classement en préparation</h3>
+
+                            <p>
+                                Les statistiques des joueurs seront
+                                disponibles lorsque le site sera connecté
+                                au serveur Minecraft PokeOrigins.
+                            </p>
+
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </section>
+
+</main>
+
+<script>
+const rankings = {
+    richesse: {
+        icon: "💰",
+        name: "Classement Richesse",
+        description: "Les joueurs possédant le plus de pièces."
+    },
+
+    temps: {
+        icon: "⏱️",
+        name: "Temps de jeu",
+        description: "Les joueurs ayant passé le plus de temps sur le serveur."
+    },
+
+    captures: {
+        icon: "🔴",
+        name: "Pokémon capturés",
+        description: "Les meilleurs collectionneurs de Pokémon."
+    },
+
+    combats: {
+        icon: "⚔️",
+        name: "Combats",
+        description: "Les joueurs ayant remporté le plus de combats."
+    },
+
+    vaincus: {
+        icon: "🎯",
+        name: "Pokémon vaincus",
+        description: "Les joueurs ayant vaincu le plus de Pokémon sauvages."
+    },
+
+    pokedex: {
+        icon: "📖",
+        name: "Pokédex",
+        description: "Les joueurs ayant découvert le plus de Pokémon différents."
+    },
+
+    niveau: {
+        icon: "⭐",
+        name: "Niveau",
+        description: "Les joueurs possédant le plus d'expérience."
+    }
+};
+
+function changeRanking(category, button) {
+
+    const ranking = rankings[category];
+
+    if (!ranking) return;
+
+    document.getElementById("rankingIcon").textContent = ranking.icon;
+    document.getElementById("rankingName").textContent = ranking.name;
+    document.getElementById("rankingDescription").textContent = ranking.description;
+
+    document.querySelectorAll(".category-button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+}
+</script>
+
+{% endblock %}  

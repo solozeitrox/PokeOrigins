@@ -1,0 +1,134 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Arènes - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.arenes-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    color: white;
+}
+
+.arenes-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.arenes-header h1 {
+    color: #f5c542;
+    font-size: 40px;
+}
+
+.arenes-header p {
+    color: #ccc;
+}
+
+.arenes-info {
+    background: rgba(245, 197, 66, 0.1);
+    border: 1px solid rgba(245, 197, 66, 0.4);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 25px;
+    color: #f5c542;
+}
+
+.arenes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.arene-card {
+    background: rgba(25, 35, 55, 0.95);
+    border: 1px solid rgba(245, 197, 66, 0.3);
+    border-radius: 15px;
+    padding: 24px;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.arene-card:hover {
+    transform: translateY(-5px);
+    border-color: #f5c542;
+}
+
+.arene-icon {
+    font-size: 45px;
+    margin-bottom: 12px;
+}
+
+.arene-card h2 {
+    color: #f5c542;
+    margin: 5px 0 12px;
+}
+
+.arene-card p {
+    color: #ccc;
+    line-height: 1.6;
+}
+
+.arene-status {
+    display: inline-block;
+    background: rgba(245, 197, 66, 0.15);
+    color: #f5c542;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 10px;
+}
+</style>
+
+<div class="arenes-page">
+
+    <div class="arenes-header">
+        <h1>🏟️ Les Arènes</h1>
+        <p>Prépare ton équipe Pokémon et relève les défis des arènes de PokeOrigins !</p>
+    </div>
+
+    <div class="arenes-info">
+        ⚔️ Découvre ici les différentes arènes, leurs champions et les récompenses à gagner.
+    </div>
+
+    <div class="arenes-grid">
+
+        <div class="arene-card">
+            <div class="arene-icon">🔥</div>
+            <h2>Arène Feu</h2>
+            <p><strong>Champion :</strong> À définir</p>
+            <p><strong>Type :</strong> Feu</p>
+            <span class="arene-status">Informations à venir</span>
+        </div>
+
+        <div class="arene-card">
+            <div class="arene-icon">💧</div>
+            <h2>Arène Eau</h2>
+            <p><strong>Champion :</strong> À définir</p>
+            <p><strong>Type :</strong> Eau</p>
+            <span class="arene-status">Informations à venir</span>
+        </div>
+
+        <div class="arene-card">
+            <div class="arene-icon">🌿</div>
+            <h2>Arène Plante</h2>
+            <p><strong>Champion :</strong> À définir</p>
+            <p><strong>Type :</strong> Plante</p>
+            <span class="arene-status">Informations à venir</span>
+        </div>
+
+        <div class="arene-card">
+            <div class="arene-icon">⚡</div>
+            <h2>Arène Électrik</h2>
+            <p><strong>Champion :</strong> À définir</p>
+            <p><strong>Type :</strong> Électrik</p>
+            <span class="arene-status">Informations à venir</span>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

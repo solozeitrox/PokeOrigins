@@ -1,0 +1,113 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Guide du débutant - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.guide-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    color: white;
+}
+
+.guide-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.guide-header h1 {
+    color: #f5c542;
+    font-size: 38px;
+}
+
+.guide-header p {
+    color: #ccc;
+}
+
+.guide-section {
+    background: rgba(25, 35, 55, 0.95);
+    border: 1px solid rgba(245, 197, 66, 0.3);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.guide-section h2 {
+    color: #f5c542;
+    margin-top: 0;
+}
+
+.guide-section p {
+    color: #ccc;
+    line-height: 1.7;
+}
+
+.guide-command {
+    display: inline-block;
+    background: #111827;
+    color: #8be9fd;
+    padding: 8px 13px;
+    border-radius: 7px;
+    font-family: monospace;
+}
+</style>
+
+<div class="guide-page">
+
+    <div class="guide-header">
+        <h1>🧭 Guide du débutant</h1>
+        <p>Tout ce qu'il faut savoir pour commencer ton aventure sur PokeOrigins.</p>
+    </div>
+
+    <div class="guide-section">
+        <h2>🏠 1. Découvrir le serveur</h2>
+        <p>
+            Bienvenue sur PokeOrigins ! Le serveur propose une aventure
+            Minecraft avec un univers à explorer
+            et des Pokémon à découvrir.
+        </p>
+    </div>
+
+    <div class="guide-section">
+        <h2>🌟 2. Le menu des origines</h2>
+        <p>
+            Tu peux ouvrir le menu des origines avec la commande :
+        </p>
+        <span class="guide-command">/originemenu</span>
+    </div>
+
+    <div class="guide-section">
+        <h2>🗺️ 3. Explorer le monde</h2>
+        <p>
+            Pars explorer le monde, découvre les différents environnements
+            et profite de ton aventure sur PokeOrigins.
+        </p>
+        <p>
+            <span class="guide-command">/spawn</span>
+            permet de retourner au point d'apparition.
+        </p>
+    </div>
+
+    <div class="guide-section">
+        <h2>🤝 4. Jouer avec les autres</h2>
+        <p>
+            Tu peux envoyer une demande de téléportation à un autre joueur
+            avec la commande :
+        </p>
+        <span class="guide-command">/tpa</span>
+    </div>
+
+    <div class="guide-section">
+        <h2>💰 5. L'économie</h2>
+        <p>
+            La monnaie du serveur s'appelle les Nayos.
+            Les informations sur son fonctionnement seront ajoutées ici.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

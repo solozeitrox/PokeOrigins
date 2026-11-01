@@ -1,0 +1,238 @@
+
+{% extends "base.html" %}
+
+{% block title %}Présentation - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.presentation-page {
+    max-width: 1150px;
+    margin: 45px auto;
+    padding: 25px;
+    color: white;
+}
+
+/* EN-TÊTE */
+
+.presentation-header {
+    text-align: center;
+    padding: 45px 25px;
+    margin-bottom: 35px;
+    background: rgba(8, 30, 65, 0.78);
+    border: 1px solid rgba(65, 165, 255, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 140, 255, 0.18);
+}
+
+.presentation-header .main-icon {
+    font-size: 55px;
+    margin-bottom: 12px;
+}
+
+.presentation-header h1 {
+    font-size: 38px;
+    color: #65c5ff;
+    margin-bottom: 15px;
+    text-shadow: 0 0 15px rgba(0, 150, 255, 0.5);
+}
+
+.presentation-header p {
+    color: #d5eaff;
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 750px;
+    margin: auto;
+}
+
+/* SECTIONS */
+
+.presentation-section {
+    margin-bottom: 30px;
+    padding: 28px;
+    background: rgba(7, 25, 55, 0.82);
+    border: 1px solid rgba(65, 155, 255, 0.3);
+    border-radius: 16px;
+}
+
+.presentation-section h2 {
+    color: #65c5ff;
+    font-size: 23px;
+    margin-bottom: 16px;
+}
+
+.presentation-section p {
+    color: #d5eaff;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+/* CARTES */
+
+.presentation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.presentation-card {
+    padding: 25px 20px;
+    text-align: center;
+    background: rgba(8, 35, 75, 0.88);
+    border: 1px solid rgba(65, 165, 255, 0.35);
+    border-radius: 16px;
+    transition: 0.25s;
+}
+
+.presentation-card:hover {
+    transform: translateY(-5px);
+    border-color: #55baff;
+    box-shadow: 0 0 18px rgba(0, 145, 255, 0.2);
+}
+
+.presentation-card .card-icon {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.presentation-card h3 {
+    color: #72caff;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.presentation-card p {
+    color: #d1e5ff;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* ADRESSE */
+
+.server-address {
+    text-align: center;
+    padding: 30px;
+    background: rgba(0, 95, 170, 0.2);
+    border: 1px solid rgba(75, 180, 255, 0.5);
+    border-radius: 16px;
+    margin-bottom: 30px;
+}
+
+.server-address h2 {
+    color: #65c5ff;
+    margin-bottom: 12px;
+}
+
+.server-address p {
+    color: #d5eaff;
+    margin-bottom: 15px;
+}
+
+.server-address .address {
+    display: inline-block;
+    padding: 13px 25px;
+    background: rgba(0, 15, 40, 0.7);
+    border: 1px solid #399fff;
+    border-radius: 10px;
+    color: #80d0ff;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+    .presentation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .presentation-header h1 {
+        font-size: 29px;
+    }
+
+    .presentation-page {
+        padding: 12px;
+    }
+}
+</style>
+
+<main class="presentation-page">
+
+    <header class="presentation-header">
+        <div class="main-icon">⚡</div>
+        <h1>Bienvenue sur PokeOrigins</h1>
+        <p>
+            Découvrez un univers Pokémon unique, partez à l'aventure,
+            explorez le monde et construisez votre propre histoire.
+            Votre aventure commence ici !
+        </p>
+    </header>
+
+    <section class="presentation-section">
+        <h2>🌍 Qu'est-ce que PokeOrigins ?</h2>
+        <p>
+            PokeOrigins est un serveur Minecraft inspiré de l'univers Pokémon.
+            Son objectif est de proposer une expérience immersive dans laquelle
+            chaque joueur peut explorer, progresser et vivre sa propre aventure.
+            <br><br>
+            Que vous soyez un explorateur, un collectionneur ou un combattant,
+            vous pourrez découvrir votre propre façon de jouer.
+        </p>
+    </section>
+
+    <div class="presentation-grid">
+
+        <div class="presentation-card">
+            <div class="card-icon">🔍</div>
+            <h3>Exploration</h3>
+            <p>
+                Partez découvrir le monde, explorez différents endroits
+                et faites de nouvelles découvertes.
+            </p>
+        </div>
+
+        <div class="presentation-card">
+            <div class="card-icon">⚔️</div>
+            <h3>Combats</h3>
+            <p>
+                Préparez votre équipe, relevez des défis
+                et affrontez de nouveaux adversaires.
+            </p>
+        </div>
+
+        <div class="presentation-card">
+            <div class="card-icon">🏆</div>
+            <h3>Progression</h3>
+            <p>
+                Progressez au fil de votre aventure
+                et développez vos compétences.
+            </p>
+        </div>
+
+    </div>
+
+    <section class="presentation-section">
+        <h2>✨ Une aventure à construire</h2>
+        <p>
+            PokeOrigins a pour ambition de proposer un univers vivant,
+            rempli de découvertes, de défis et de possibilités.
+            Chaque joueur pourra avancer à son rythme et créer
+            sa propre aventure.
+        </p>
+    </section>
+
+    <div class="server-address">
+        <h2>🎮 Rejoindre PokeOrigins</h2>
+        <p>
+            L'aventure vous attend ! Les informations de connexion
+            seront disponibles prochainement.
+        </p>
+        <div class="address">
+            Adresse du serveur : bientôt disponible
+        </div>
+    </div>
+
+</main>
+
+{% endblock %}

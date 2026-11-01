@@ -1,0 +1,145 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}Règlement - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.reglement-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    color: white;
+}
+
+.reglement-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.reglement-header h1 {
+    color: #f5c542;
+    font-size: 40px;
+}
+
+.reglement-header p {
+    color: #ccc;
+}
+
+.reglement-warning {
+    background: rgba(245, 197, 66, 0.1);
+    border: 1px solid #f5c542;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 25px;
+    color: #f5c542;
+}
+
+.reglement-card {
+    background: rgba(25, 35, 55, 0.95);
+    border: 1px solid rgba(245, 197, 66, 0.3);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 15px;
+}
+
+.reglement-card h2 {
+    color: #f5c542;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.reglement-card p {
+    color: #ccc;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.reglement-number {
+    color: #f5c542;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.reglement-footer {
+    text-align: center;
+    color: #aaa;
+    margin-top: 30px;
+}
+</style>
+
+<div class="reglement-page">
+
+    <div class="reglement-header">
+        <h1>📜 Règlement PokeOrigins</h1>
+        <p>Les règles à respecter pour garantir une bonne expérience à tous les joueurs.</p>
+    </div>
+
+    <div class="reglement-warning">
+        ⚠️ En rejoignant PokeOrigins, chaque joueur s'engage à respecter le règlement.
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">01.</span> Respect</h2>
+        <p>Pas d’insultes, de harcèlement, de discrimination ou de menaces envers les autres joueurs.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">02.</span> Jeu équitable</h2>
+        <p>La triche, la duplication abusive et l’exploitation de bugs sont interdites.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">03.</span> Communauté</h2>
+        <p>Le spam, la publicité non autorisée et les contenus inappropriés sont interdits.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">04.</span> Échanges</h2>
+        <p>Les arnaques lors des échanges de Pokémon ou d’objets sont interdites.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">05.</span> Vie du serveur</h2>
+        <p>Respecte les constructions, les joueurs et les décisions de modération.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">06.</span> Sécurité</h2>
+        <p>Ne partage jamais tes mots de passe ou tes données personnelles.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">07.</span> Constructions</h2>
+        <p>Ne détruis pas et ne modifies pas les constructions des autres joueurs sans leur autorisation.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">08.</span> Vol et dégradation</h2>
+        <p>Le vol et la dégradation des biens appartenant aux autres joueurs sont interdits.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">09.</span> Bugs du serveur</h2>
+        <p>Tout bug découvert doit être signalé à l'équipe. Il est interdit de l'exploiter volontairement.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">10.</span> Équipe de modération</h2>
+        <p>Les décisions de modération doivent être respectées. En cas de désaccord, adresse-toi à l'équipe par les moyens prévus.</p>
+    </div>
+
+    <div class="reglement-card">
+        <h2><span class="reglement-number">11.</span> Responsabilité du compte</h2>
+        <p>Chaque joueur est responsable de l'utilisation de son compte et des actions réalisées avec celui-ci.</p>
+    </div>
+
+    <div class="reglement-footer">
+        <p>Merci de contribuer à faire de PokeOrigins une communauté agréable !</p>
+    </div>
+
+</div>
+
+{% endblock %}
+```

@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}PokeOrigins{% endblock %}</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100%;
+            width: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            color: white;
+
+            background-image:
+                linear-gradient(rgba(0, 10, 35, 0.55), rgba(0, 10, 35, 0.75)),
+                url("/static/image/icons/fond%20home.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+    body.fond-wiki {
+        background-image:
+           linear-gradient(rgba(3, 12, 30, 0.25), rgba(3, 12, 30, 0.25)),
+           url("/static/image/icons/fond%20home.png");
+
+         background-size: cover;
+         background-position: center;
+         background-repeat: no-repeat;
+         background-attachment: fixed;
+    }
+        /* HEADER */
+
+        .site-header {
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 100;
+            background: rgba(2, 15, 45, 0.92);
+            border-bottom: 2px solid #159dff;
+            flex-shrink: 0;
+        }
+
+        .site-logo {
+            color: #45eaff;
+            font-size: 32px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .menu-button {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border: 1px solid #21baff;
+            border-radius: 12px;
+            background: rgba(0, 100, 220, 0.2);
+            color: white;
+            font-size: 27px;
+            cursor: pointer;
+        }
+
+        /* CONNEXION MINECRAFT */
+
+        .minecraft-connect {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 18px;
+            border: 1px solid #21baff;
+            border-radius: 10px;
+            background: rgba(0, 100, 220, 0.2);
+            color: #bceaff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .minecraft-connect:hover {
+            background: rgba(0, 145, 255, 0.4);
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 160, 255, 0.35);
+        }
+
+        /* MENU */
+
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.65);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 290px;
+            height: 100vh;
+            padding: 30px 20px;
+            z-index: 201;
+            background: rgba(3, 20, 55, 0.98);
+            border-right: 2px solid #159dff;
+            transition: left 0.3s ease;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .menu-title {
+            color: #45eaff;
+            font-size: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .menu-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .side-menu a {
+            display: block;
+            padding: 15px;
+            margin-bottom: 10px;
+            color: white;
+            text-decoration: none;
+            background: rgba(0, 110, 220, 0.13);
+            border: 1px solid rgba(40, 165, 255, 0.3);
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+        .side-menu a:hover {
+            color: #45eaff;
+            background: rgba(0, 150, 255, 0.3);
+            border-color: #45eaff;
+        }
+
+        /* FENÊTRE DE CONNEXION */
+
+        .connection-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: rgba(0, 5, 20, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .connection-overlay.active {
+            display: flex;
+        }
+
+        .connection-box {
+            position: relative;
+            width: 100%;
+            max-width: 430px;
+            padding: 32px;
+            background: linear-gradient(145deg, #0b2850, #06162f);
+            border: 1px solid #269fff;
+            border-radius: 18px;
+            box-shadow: 0 0 35px rgba(0, 130, 255, 0.25);
+        }
+
+        .connection-close {
+            position: absolute;
+            top: 12px;
+            right: 17px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 27px;
+            cursor: pointer;
+        }
+
+        .connection-icon {
+            font-size: 42px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .connection-box h2 {
+            text-align: center;
+            color: #65c5ff;
+            margin-bottom: 12px;
+        }
+
+        .connection-description {
+            color: #c5ddf5;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .connection-box label {
+            display: block;
+            color: #bce5ff;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .connection-box input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            border: 1px solid #267fc0;
+            background: #061a35;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .connection-box input:focus {
+            border-color: #55c5ff;
+            box-shadow: 0 0 8px rgba(50, 170, 255, 0.3);
+        }
+
+        .connection-submit {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: linear-gradient(90deg, #0876d1, #13a9ed);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .connection-submit:hover {
+            filter: brightness(1.15);
+        }
+
+        .connection-step {
+            display: none;
+        }
+
+        .connection-step.active {
+            display: block;
+        }
+
+        .connection-message {
+            margin-top: 15px;
+            color: #ffd477;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .page-content {
+            flex: 1 0 auto;
+            width: 100%;
+        }
+
+        footer {
+            width: 100%;
+            margin-top: auto;
+            padding: 12px 25px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            color: rgba(210, 230, 255, 0.65);
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .site-header {
+                height: 70px;
+            }
+
+            .site-logo {
+                font-size: 22px;
+            }
+
+            .menu-button {
+                left: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 23px;
+            }
+
+            .minecraft-connect {
+                right: 10px;
+                padding: 10px;
+                font-size: 11px;
+            }
+
+            .connection-box {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="{% if request.path.startswith('/wiki') %}fond-wiki{% endif %}">
+
+    <header class="site-header">
+
+        <button class="menu-button" onclick="toggleMenu()">☰</button>
+
+        <a href="/" class="site-logo">⚡ PokeOrigins</a>
+
+        <button class="minecraft-connect" onclick="openConnection()">
+            🎮 Connecter Minecraft
+        </button>
+
+    </header>
+
+    <!-- MENU -->
+
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="sideMenu">
+        <button class="menu-close" onclick="toggleMenu()">×</button>
+
+        <div class="menu-title">⚡ PokeOrigins</div>
+
+        <a href="/">🏠 Accueil</a>
+        <a href="/presentation">🌍 Présentation</a>
+        <a href="/wiki">📘 Wiki</a>
+        <a href="/vote">🗳️ Vote</a>
+        <a href="/boutique">🛒 Boutique</a>
+        <a href="/actualites">📰 Actualités</a>
+        <a href="/classements">🏆 Classements</a>
+        <a href="/discord">💬 Discord</a>
+    </nav>
+
+    <!-- FENÊTRE DE CONNEXION -->
+
+    <div class="connection-overlay" id="connectionOverlay">
+
+        <div class="connection-box">
+
+            <button class="connection-close" onclick="closeConnection()">×</button>
+
+            <div class="connection-icon">🔗</div>
+
+            <h2>Connexion Minecraft</h2>
+
+            <p class="connection-description">
+                Associe ton compte Minecraft à ton compte PokeOrigins.
+            </p>
+
+            <!-- ÉTAPE 1 -->
+
+            <div class="connection-step active" id="connectionStep1">
+
+                <label for="minecraftUsername">Pseudo Minecraft</label>
+
+                <input
+                    type="text"
+                    id="minecraftUsername"
+                    placeholder="Exemple : Solo_Zeitrox"
+                    maxlength="16"
+                    autocomplete="off"
+                >
+
+                <button class="connection-submit" onclick="requestMinecraftCode()">
+                    Demander un code
+                </button>
+
+                <p class="connection-message" id="connectionMessage1">
+                    Tu devras être connecté au serveur Minecraft pour recevoir ton code.
+                </p>
+
+            </div>
+
+            <!-- ÉTAPE 2 -->
+
+            <div class="connection-step" id="connectionStep2">
+
+                <label for="minecraftCode">Code de vérification</label>
+
+                <input
+                    type="text"
+                    id="minecraftCode"
+                    placeholder="Entre ton code"
+                    maxlength="8"
+                    autocomplete="off"
+                >
+
+                <button class="connection-submit" onclick="verifyMinecraftCode()">
+                    Confirmer la connexion
+                </button>
+
+                <p class="connection-message" id="connectionMessage2">
+                    Entre ici le code reçu dans le chat Minecraft.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="page-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+
+        /* MENU */
+
+        function toggleMenu() {
+            document.getElementById("sideMenu").classList.toggle("active");
+            document.getElementById("menuOverlay").classList.toggle("active");
+        }
+
+        /* FENÊTRE DE CONNEXION */
+
+        function openConnection() {
+            document.getElementById("connectionOverlay").classList.add("active");
+        }
+
+        function closeConnection() {
+            document.getElementById("connectionOverlay").classList.remove("active");
+        }
+
+        /* ÉTAPE 1 - DEMANDE DE CODE */
+
+        function requestMinecraftCode() {
+
+            const pseudo = document.getElementById("minecraftUsername").value.trim();
+            const message = document.getElementById("connectionMessage1");
+
+            if (!/^[A-Za-z0-9_]{3,16}$/.test(pseudo)) {
+                message.textContent = "Veuillez entrer un pseudo Minecraft valide.";
+                return;
+            }
+
+            message.textContent =
+                "L'interface est prête. L'envoi réel du code sera activé lors de la connexion au serveur.";
+
+            // La demande au serveur Fabric sera ajoutée ici.
+            // Ne pas afficher un faux code ou considérer le joueur comme connecté.
+        }
+
+        /* ÉTAPE 2 - VÉRIFICATION */
+
+        function verifyMinecraftCode() {
+
+            const code = document.getElementById("minecraftCode").value.trim();
+            const message = document.getElementById("connectionMessage2");
+
+            if (!/^[A-Za-z0-9]{4,8}$/.test(code)) {
+                message.textContent = "Veuillez entrer un code valide.";
+                return;
+            }
+
+            message.textContent =
+                "La vérification sera activée lorsque le serveur Minecraft sera relié au site.";
+
+            // La vérification réelle sera effectuée par Flask auprès du serveur.
+        }
+
+        /* FERMETURE AVEC ÉCHAP */
+
+        document.addEventListener("keydown", function(event) {
+
+            if (event.key === "Escape") {
+                document.getElementById("sideMenu").classList.remove("active");
+                document.getElementById("menuOverlay").classList.remove("active");
+                closeConnection();
+            }
+
+        });
+
+        /* FERMETURE EN CLIQUANT AUTOUR */
+
+        document.getElementById("connectionOverlay").addEventListener("click", function(event) {
+
+            if (event.target === this) {
+                closeConnection();
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+
+{% extends "base.html" %}
+
+{% block title %}Actualités - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.actualites-page {
+    max-width: 1150px;
+    margin: 40px auto;
+    padding: 25px;
+    color: white;
+}
+
+/* EN-TÊTE */
+
+.actualites-header {
+    text-align: center;
+    padding: 40px 20px;
+    margin-bottom: 35px;
+    background: rgba(8, 30, 65, 0.85);
+    border: 1px solid rgba(65, 165, 255, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 140, 255, 0.15);
+}
+
+.actualites-header .icon {
+    font-size: 50px;
+    margin-bottom: 12px;
+}
+
+.actualites-header h1 {
+    color: #65c5ff;
+    font-size: 36px;
+    margin-bottom: 12px;
+}
+
+.actualites-header p {
+    color: #d5eaff;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* FILTRES */
+
+.actualites-filtres {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.filtre-btn {
+    padding: 11px 20px;
+    background: rgba(5, 35, 75, 0.85);
+    border: 1px solid rgba(65, 165, 255, 0.4);
+    border-radius: 9px;
+    color: #c9e8ff;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.filtre-btn:hover,
+.filtre-btn.active {
+    background: rgba(0, 125, 220, 0.45);
+    border-color: #65c5ff;
+    color: white;
+}
+
+/* ACTUALITÉS */
+
+.actualites-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.actualite-card {
+    padding: 25px;
+    background: rgba(7, 25, 55, 0.88);
+    border: 1px solid rgba(65, 155, 255, 0.35);
+    border-radius: 16px;
+    transition: 0.25s;
+}
+
+.actualite-card:hover {
+    transform: translateY(-4px);
+    border-color: #55baff;
+    box-shadow: 0 0 18px rgba(0, 145, 255, 0.18);
+}
+
+.actualite-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.actualite-categorie {
+    padding: 6px 12px;
+    background: rgba(0, 135, 230, 0.25);
+    border: 1px solid rgba(65, 165, 255, 0.4);
+    border-radius: 20px;
+    color: #79caff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.actualite-date {
+    color: #8baac9;
+    font-size: 12px;
+}
+
+.actualite-card h2 {
+    color: #75caff;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.actualite-card p {
+    color: #d2e5ff;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.actualite-icon {
+    font-size: 35px;
+    margin-bottom: 15px;
+}
+
+/* AUCUNE ACTUALITÉ */
+
+.empty-news {
+    grid-column: 1 / -1;
+    padding: 45px 20px;
+    text-align: center;
+    background: rgba(7, 25, 55, 0.8);
+    border: 1px dashed rgba(65, 165, 255, 0.5);
+    border-radius: 16px;
+}
+
+.empty-news .empty-icon {
+    font-size: 45px;
+    margin-bottom: 15px;
+}
+
+.empty-news h2 {
+    color: #65c5ff;
+    margin-bottom: 12px;
+}
+
+.empty-news p {
+    color: #c5ddf5;
+    line-height: 1.7;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 750px) {
+    .actualites-list {
+        grid-template-columns: 1fr;
+    }
+
+    .actualites-header h1 {
+        font-size: 28px;
+    }
+
+    .actualites-page {
+        padding: 12px;
+    }
+}
+</style>
+
+<main class="actualites-page">
+
+    <header class="actualites-header">
+        <div class="icon">📰</div>
+
+        <h1>Actualités PokeOrigins</h1>
+
+        <p>
+            Retrouvez toutes les annonces, les nouveautés,
+            les événements et les mises à jour du serveur.
+        </p>
+    </header>
+
+    <!-- FILTRES -->
+
+    <div class="actualites-filtres">
+
+        <button class="filtre-btn active" onclick="filterNews('all', this)">
+            Toutes
+        </button>
+
+        <button class="filtre-btn" onclick="filterNews('annonce', this)">
+            📢 Annonces
+        </button>
+
+        <button class="filtre-btn" onclick="filterNews('mise-a-jour', this)">
+            🔧 Mises à jour
+        </button>
+
+        <button class="filtre-btn" onclick="filterNews('evenement', this)">
+            🎉 Événements
+        </button>
+
+    </div>
+
+    <!-- LISTE DES ACTUALITÉS -->
+
+    <div class="actualites-list" id="actualitesList">
+
+        <div class="empty-news">
+            <div class="empty-icon">📭</div>
+
+            <h2>Aucune actualité pour le moment</h2>
+
+            <p>
+                Les premières nouvelles de PokeOrigins arriveront bientôt.
+                Revenez régulièrement pour découvrir les nouveautés !
+            </p>
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+function filterNews(category, button) {
+
+    document.querySelectorAll(".filtre-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    document.querySelectorAll(".actualite-card").forEach(card => {
+
+        if (category === "all" || card.dataset.category === category) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+
+    });
+
+}
+</script>
+
+{% endblock %}

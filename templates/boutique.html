@@ -1,0 +1,283 @@
+
+{% extends "base.html" %}
+
+{% block title %}Boutique - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.boutique-page {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 25px;
+    color: white;
+}
+
+/* EN-TÊTE */
+
+.boutique-header {
+    text-align: center;
+    padding: 40px 20px;
+    margin-bottom: 30px;
+    background: rgba(8, 30, 65, 0.85);
+    border: 1px solid rgba(65, 165, 255, 0.5);
+    border-radius: 20px;
+}
+
+.boutique-header .icon {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.boutique-header h1 {
+    color: #65c5ff;
+    font-size: 36px;
+    margin-bottom: 12px;
+}
+
+.boutique-header p {
+    color: #d5eaff;
+    line-height: 1.7;
+}
+
+/* MON SOLDE */
+
+.solde-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 22px 25px;
+    margin-bottom: 35px;
+    background: rgba(0, 80, 150, 0.25);
+    border: 1px solid rgba(65, 165, 255, 0.4);
+    border-radius: 15px;
+}
+
+.solde-box h2 {
+    color: #65c5ff;
+    font-size: 20px;
+}
+
+.solde-box .solde {
+    color: #ffd45c;
+    font-size: 23px;
+    font-weight: bold;
+}
+
+/* SECTIONS */
+
+.boutique-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    color: #65c5ff;
+    font-size: 25px;
+    margin-bottom: 20px;
+}
+
+/* CARTES */
+
+.boutique-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.boutique-card {
+    padding: 25px 20px;
+    text-align: center;
+    background: rgba(8, 30, 65, 0.88);
+    border: 1px solid rgba(65, 155, 255, 0.35);
+    border-radius: 17px;
+    transition: 0.25s;
+}
+
+.boutique-card:hover {
+    transform: translateY(-5px);
+    border-color: #55baff;
+    box-shadow: 0 0 20px rgba(0, 145, 255, 0.2);
+}
+
+.boutique-card .item-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.boutique-card h3 {
+    color: #75caff;
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+.boutique-card p {
+    color: #d2e5ff;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 48px;
+}
+
+.item-price {
+    color: #ffd45c;
+    font-weight: bold;
+    font-size: 17px;
+    margin: 18px 0;
+}
+
+.buy-button {
+    display: inline-block;
+    padding: 11px 22px;
+    background: rgba(20, 120, 210, 0.35);
+    border: 1px solid #55baff;
+    border-radius: 9px;
+    color: #bce5ff;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* INFORMATION */
+
+.boutique-info {
+    padding: 23px;
+    background: rgba(5, 25, 55, 0.8);
+    border: 1px solid rgba(65, 155, 255, 0.3);
+    border-radius: 15px;
+    color: #d2e5ff;
+    line-height: 1.8;
+}
+
+.boutique-info h2 {
+    color: #65c5ff;
+    margin-bottom: 12px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+    .boutique-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 550px) {
+    .boutique-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .solde-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .boutique-header h1 {
+        font-size: 28px;
+    }
+}
+</style>
+
+<main class="boutique-page">
+
+    <header class="boutique-header">
+        <div class="icon">🛒</div>
+        <h1>Boutique PokeOrigins</h1>
+        <p>
+            Bienvenue dans la boutique officielle de PokeOrigins !
+            Découvrez les pièces, les récompenses et les objets
+            disponibles pour votre aventure.
+        </p>
+    </header>
+
+    <div class="solde-box">
+        <h2>💰 Mon portefeuille</h2>
+        <div class="solde">0 pièces</div>
+    </div>
+
+    <!-- PIECES -->
+
+    <section class="boutique-section">
+
+        <h2 class="section-title">💰 Acheter des pièces</h2>
+
+        <div class="boutique-grid">
+
+            <div class="boutique-card">
+                <div class="item-icon">🪙</div>
+                <h3>Petit paquet</h3>
+                <p>Un petit montant de pièces pour commencer.</p>
+                <div class="item-price">Prix à définir</div>
+                <button class="buy-button" disabled>Bientôt disponible</button>
+            </div>
+
+            <div class="boutique-card">
+                <div class="item-icon">💰</div>
+                <h3>Paquet moyen</h3>
+                <p>Une réserve de pièces pour vos achats.</p>
+                <div class="item-price">Prix à définir</div>
+                <button class="buy-button" disabled>Bientôt disponible</button>
+            </div>
+
+            <div class="boutique-card">
+                <div class="item-icon">💎</div>
+                <h3>Grand paquet</h3>
+                <p>Une grande quantité de pièces pour votre aventure.</p>
+                <div class="item-price">Prix à définir</div>
+                <button class="buy-button" disabled>Bientôt disponible</button>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- RECOMPENSES -->
+
+    <section class="boutique-section">
+
+        <h2 class="section-title">🎁 Récompenses</h2>
+
+        <div class="boutique-grid">
+
+            <div class="boutique-card">
+                <div class="item-icon">🎒</div>
+                <h3>Pack aventurier</h3>
+                <p>Une récompense pour accompagner vos premières aventures.</p>
+                <div class="item-price">Prix à définir</div>
+                <button class="buy-button" disabled>Bientôt disponible</button>
+            </div>
+
+            <div class="boutique-card">
+                <div class="item-icon">✨</div>
+                <h3>Bonus spécial</h3>
+                <p>Un bonus spécial à découvrir dans la boutique.</p>
+                <div class="item-price">Prix à définir</div>
+                <button class="buy-button" disabled>Bientôt disponible</button>
+            </div>
+
+            <div class="boutique-card">
+                <div class="item-icon">🏆</div>
+                <h3>Récompense exclusive</h3>
+                <p>Une récompense spéciale pour les collectionneurs.</p>
+                <div class="item-price">Prix à définir</div>
+                <button class="buy-button" disabled>Bientôt disponible</button>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- INFORMATIONS -->
+
+    <section class="boutique-info">
+        <h2>ℹ️ Informations sur la boutique</h2>
+        <p>
+            La boutique est actuellement en préparation.
+            Les articles, les prix et les achats seront activés
+            prochainement.
+        </p>
+    </section>
+
+</main>
+
+{% endblock %}

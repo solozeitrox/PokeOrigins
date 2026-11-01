@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Discord - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.discord-page {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+    color: white;
+}
+
+/* BANNIÈRE */
+.discord-banner {
+    background:
+        linear-gradient(135deg, rgba(5, 25, 55, 0.85), rgba(15, 75, 120, 0.75)),
+        url("/static/image/icons/case.png");
+
+    background-size: cover;
+    background-position: center;
+
+    border: 1px solid rgba(80, 210, 255, 0.5);
+    border-radius: 20px;
+
+    padding: 65px 25px;
+    text-align: center;
+
+    box-shadow: 0 0 25px rgba(0, 180, 255, 0.15);
+}
+
+.discord-logo {
+    font-size: 65px;
+    margin-bottom: 15px;
+}
+
+.discord-banner h1 {
+    color: #70eaff;
+    font-size: 38px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 12px rgba(0, 190, 255, 0.5);
+}
+
+.discord-banner p {
+    color: #e0edf8;
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 650px;
+    margin: 0 auto 25px;
+}
+
+/* BOUTON DISCORD */
+.discord-button {
+    display: inline-block;
+    padding: 15px 32px;
+
+    background: #5865F2;
+    color: white;
+
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+
+    border-radius: 10px;
+    transition: 0.25s;
+}
+
+.discord-button:hover {
+    background: #7280ff;
+    transform: translateY(-4px);
+
+    box-shadow: 0 0 20px rgba(88, 101, 242, 0.5);
+}
+
+/* INFORMATIONS */
+.discord-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.discord-section h2 {
+    color: #70eaff;
+    font-size: 27px;
+    margin-bottom: 25px;
+}
+
+.discord-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* CARTES */
+.discord-card {
+    background:
+        linear-gradient(rgba(5, 25, 50, 0.35), rgba(5, 20, 45, 0.65)),
+        url("/static/image/icons/case.png");
+
+    background-size: cover;
+    background-position: center;
+
+    border: 1px solid rgba(80, 210, 255, 0.4);
+    border-radius: 15px;
+
+    padding: 25px 18px;
+    transition: 0.25s;
+}
+
+.discord-card:hover {
+    transform: translateY(-5px);
+    border-color: #70eaff;
+
+    box-shadow: 0 0 18px rgba(0, 190, 255, 0.2);
+}
+
+.discord-card .icon {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.discord-card h3 {
+    color: #70eaff;
+    margin-bottom: 10px;
+}
+
+.discord-card p {
+    color: #dceaf5;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* BAS DE PAGE */
+.discord-bottom {
+    margin-top: 40px;
+    text-align: center;
+    color: #b8d5e8;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .discord-banner {
+        padding: 40px 18px;
+    }
+
+    .discord-banner h1 {
+        font-size: 29px;
+    }
+}
+.discord-copyright {
+    position: fixed;
+    bottom: 10px;
+    left: 20px;
+    color: rgba(210, 230, 255, 0.65);
+    font-size: 13px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+}
+</style>
+
+<div class="discord-page">
+
+    <section class="discord-banner">
+
+        <div class="discord-logo">💬</div>
+
+        <h1>Discord PokeOrigins</h1>
+
+        <p>
+            Rejoins la communauté PokeOrigins !
+            Rencontre d'autres joueurs, partage tes aventures
+            et reste informé de toutes les nouveautés du serveur.
+        </p>
+
+        <a
+            href="https://discord.gg/qFsuqEVftA"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="discord-button"
+        >
+            Rejoindre le Discord →
+        </a>
+
+    </section>
+
+    <section class="discord-section">
+
+        <h2>Pourquoi nous rejoindre ?</h2>
+
+        <div class="discord-grid">
+
+            <div class="discord-card">
+                <div class="icon">📢</div>
+                <h3>Actualités</h3>
+                <p>
+                    Retrouve les annonces, les mises à jour
+                    et les nouveautés de PokeOrigins.
+                </p>
+            </div>
+
+            <div class="discord-card">
+                <div class="icon">👥</div>
+                <h3>Communauté</h3>
+                <p>
+                    Discute avec les autres joueurs,
+                    partage tes captures et tes aventures.
+                </p>
+            </div>
+
+            <div class="discord-card">
+                <div class="icon">🎮</div>
+                <h3>Entraide</h3>
+                <p>
+                    Pose tes questions et obtiens de l'aide
+                    pour progresser sur PokeOrigins.
+                </p>
+            </div>
+
+            <div class="discord-card">
+                <div class="icon">🎉</div>
+                <h3>Événements</h3>
+                <p>
+                    Reste informé des événements,
+                    animations et activités du serveur.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="discord-bottom">
+        PokeOrigins — Une communauté, une aventure.
+    </div>
+
+</div>
+<footer class="discord-copyright">
+    © 2026 PokeOrigins — Tous droits réservés.
+</footer>
+{% endblock %}
