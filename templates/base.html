@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -309,16 +308,21 @@
 
         /* PIED DE PAGE */
 
-        footer {
+        .site-footer {
             width: 100%;
             margin-top: auto;
-            padding: 12px 25px;
-            text-align: left;
-            background: transparent;
-            border: none;
-            box-shadow: none;
+            padding: 18px 20px;
+            text-align: center;
             color: rgba(210, 230, 255, 0.65);
             font-size: 13px;
+            background: rgba(2, 15, 45, 0.85);
+            border-top: 1px solid rgba(50, 190, 255, 0.25);
+            flex-shrink: 0;
+        }
+
+        .site-footer span {
+            color: #45eaff;
+            font-weight: bold;
         }
 
         /* RESPONSIVE */
@@ -484,6 +488,12 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- COPYRIGHT SUR TOUTES LES PAGES -->
+
+    <footer class="site-footer">
+        © 2026 <span>PokeOrigins</span> — Tous droits réservés.
+    </footer>
+
     <!-- JAVASCRIPT -->
 
     <script>
@@ -541,7 +551,6 @@
                 "L'interface est prête. L'envoi réel du code sera activé lors de la connexion au serveur.";
 
             // La demande au serveur Fabric sera ajoutée ici.
-            // Aucun faux code ne sera affiché.
         }
 
         /* ÉTAPE 2 - VÉRIFICATION */
