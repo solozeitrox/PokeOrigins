@@ -909,6 +909,13 @@ def joueur():
         progression_quetes=progression_quetes
     )
 
+# ==========================================
+# PANEL ADMINISTRATION
+# ==========================================
+
+@app.route("/admin")
+def panel_admin():
+    return render_template("admin.html")
 
 # ==========================================
 # POKEDEX PERSONNEL

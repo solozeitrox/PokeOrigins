@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Administration - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.admin-page {
+    max-width: 1250px;
+    margin: 45px auto;
+    padding: 25px;
+    color: white;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.admin-header h1 {
+    color: #65baff;
+    font-size: 34px;
+}
+
+.admin-header p {
+    color: #aabbd0;
+    margin-top: 10px;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-bottom: 35px;
+}
+
+.admin-stat {
+    background: #14243a;
+    border: 1px solid #294665;
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+}
+
+.admin-stat h3 {
+    color: #9db5d1;
+    font-size: 14px;
+}
+
+.admin-stat strong {
+    display: block;
+    color: #65baff;
+    font-size: 30px;
+    margin-top: 10px;
+}
+
+.admin-section {
+    background: #14243a;
+    border: 1px solid #294665;
+    border-radius: 14px;
+    padding: 25px;
+}
+
+.admin-section h2 {
+    margin-bottom: 20px;
+    color: #65baff;
+}
+
+.admin-table-wrapper {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 14px;
+    border-bottom: 1px solid #294665;
+    text-align: left;
+}
+
+.admin-table th {
+    color: #65baff;
+}
+
+.admin-table select {
+    background: #0d1929;
+    color: white;
+    border: 1px solid #42658a;
+    padding: 9px;
+    border-radius: 7px;
+}
+
+.admin-message {
+    margin: 15px 0;
+    color: #aabbd0;
+}
+
+.admin-error {
+    color: #ff7777;
+}
+
+.admin-success {
+    color: #65df9a;
+}
+
+@media(max-width: 600px) {
+    .admin-page {
+        padding: 12px;
+    }
+
+    .admin-section {
+        padding: 14px;
+    }
+}
+</style>
+
+<div class="admin-page">
+
+    <div class="admin-header">
+        <h1>🛡️ Administration</h1>
+        <p>Gestion des joueurs et des permissions PokeOrigins</p>
+    </div>
+
+    <div id="adminMessage" class="admin-message">
+        Vérification des autorisations...
+    </div>
+
+    <div id="adminContent" style="display:none;">
+
+        <div class="admin-stats">
+
+            <div class="admin-stat">
+                <h3>Joueurs inscrits</h3>
+                <strong id="totalJoueurs">0</strong>
+            </div>
+
+            <div class="admin-stat">
+                <h3>Administrateurs</h3>
+                <strong id="totalAdmins">0</strong>
+            </div>
+
+            <div class="admin-stat">
+                <h3>Modérateurs</h3>
+                <strong id="totalModerateurs">0</strong>
+            </div>
+
+        </div>
+
+        <div class="admin-section">
+
+            <h2>👥 Gestion des joueurs</h2>
+
+            <p class="admin-message">
+                Consulte les comptes et attribue les permissions.
+            </p>
+
+            <div class="admin-table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Joueur</th>
+                            <th>Pseudo Minecraft</th>
+                            <th>Statut Minecraft</th>
+                            <th>Permission</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="listeJoueurs"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+async function initialiserPanelAdmin() {
+
+    const message = document.getElementById("adminMessage");
+    const contenu = document.getElementById("adminContent");
+
+    try {
+
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError || !sessionData.session) {
+            message.textContent = "Tu dois être connecté pour accéder à cette page.";
+            return;
+        }
+
+        const session = sessionData.session;
+
+        const { data: monProfil, error: profilError } =
+            await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", session.user.id)
+                .single();
+
+        if (profilError || !monProfil || monProfil.role !== "admin") {
+            message.textContent = "Accès refusé : tu n'es pas administrateur.";
+            message.classList.add("admin-error");
+            return;
+        }
+
+        const { data: joueurs, error: joueursError } =
+            await supabaseClient
+                .from("profiles")
+                .select("id, username, minecraft_username, minecraft_verified, role")
+                .order("created_at", { ascending: false });
+
+        if (joueursError) {
+            throw joueursError;
+        }
+
+        afficherJoueurs(joueurs || []);
+
+        contenu.style.display = "block";
+        message.textContent = "Bienvenue dans le panel administrateur.";
+        message.classList.add("admin-success");
+
+    } catch (erreur) {
+
+        console.error("Erreur panel admin :", erreur);
+
+        message.textContent =
+            "Impossible de charger les joueurs. Vérifie les autorisations Supabase.";
+        message.classList.add("admin-error");
+    }
+}
+
+
+function afficherJoueurs(joueurs) {
+
+    const liste = document.getElementById("listeJoueurs");
+
+    liste.replaceChildren();
+
+    document.getElementById("totalJoueurs").textContent = joueurs.length;
+
+    document.getElementById("totalAdmins").textContent =
+        joueurs.filter(j => j.role === "admin").length;
+
+    document.getElementById("totalModerateurs").textContent =
+        joueurs.filter(j => j.role === "moderateur").length;
+
+    joueurs.forEach(joueur => {
+
+        const ligne = document.createElement("tr");
+
+        function cellule(texte) {
+            const td = document.createElement("td");
+            td.textContent = texte;
+            ligne.appendChild(td);
+            return td;
+        }
+
+        cellule(joueur.username || "Joueur sans nom");
+        cellule(joueur.minecraft_username || "Non renseigné");
+
+        cellule(
+            joueur.minecraft_verified ? "🟢 Vérifié" : "🟠 Non vérifié"
+        );
+
+        const celluleRole = cellule("");
+
+        const select = document.createElement("select");
+
+        [
+            { value: "joueur", label: "Joueur" },
+            { value: "moderateur", label: "Modérateur" },
+            { value: "admin", label: "Administrateur" }
+        ].forEach(optionData => {
+
+            const option = document.createElement("option");
+            option.value = optionData.value;
+            option.textContent = optionData.label;
+
+            if (joueur.role === optionData.value) {
+                option.selected = true;
+            }
+
+            select.appendChild(option);
+        });
+
+        select.addEventListener("change", async () => {
+
+            const nouveauRole = select.value;
+
+            if (!confirm(
+                "Modifier la permission de " +
+                (joueur.username || "ce joueur") +
+                " ?"
+            )) {
+                select.value = joueur.role;
+                return;
+            }
+
+            select.disabled = true;
+
+            const { error } = await supabaseClient.rpc(
+                "admin_modifier_role",
+                {
+                    cible: joueur.id,
+                    nouveau_role: nouveauRole
+                }
+            );
+
+            if (error) {
+
+                alert("Impossible de modifier cette permission.");
+
+                console.error(error);
+
+                select.value = joueur.role;
+
+            } else {
+
+                joueur.role = nouveauRole;
+
+                afficherJoueurs(joueurs);
+
+                document.getElementById("adminMessage").textContent =
+                    "Permission mise à jour avec succès.";
+
+            }
+
+            select.disabled = false;
+        });
+
+        celluleRole.appendChild(select);
+
+        liste.appendChild(ligne);
+
+    });
+}
+
+initialiserPanelAdmin();
+</script>
+
+{% endblock %}
