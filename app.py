@@ -81,6 +81,7 @@ def verifier_token_supabase(token):
         return None
 
 
+
 @app.route("/auth/session", methods=["POST"])
 def auth_session():
 
@@ -123,14 +124,20 @@ def auth_session():
         )
 
         if reponse.status_code not in (200, 201, 204):
-    print("ERREUR SUPABASE PROFIL :", reponse.status_code, reponse.text)
+            print(
+                "ERREUR SUPABASE PROFIL :",
+                reponse.status_code,
+                reponse.text
+            )
 
-    return jsonify({
-        "succes": False,
-        "erreur": "Impossible de créer le profil."
-    }), 500
+            return jsonify({
+                "succes": False,
+                "erreur": "Impossible de créer le profil."
+            }), 500
 
-    except requests.RequestException:
+    except requests.RequestException as erreur:
+        print("ERREUR CONNEXION SUPABASE :", str(erreur))
+
         return jsonify({
             "succes": False,
             "erreur": "Erreur de connexion à Supabase."
