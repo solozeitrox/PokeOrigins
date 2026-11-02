@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}Actualités - PokeOrigins{% endblock %}
@@ -12,8 +11,6 @@
     padding: 25px;
     color: white;
 }
-
-/* EN-TÊTE */
 
 .actualites-header {
     text-align: center;
@@ -42,8 +39,6 @@
     line-height: 1.7;
 }
 
-/* FILTRES */
-
 .actualites-filtres {
     display: flex;
     justify-content: center;
@@ -59,7 +54,6 @@
     border-radius: 9px;
     color: #c9e8ff;
     cursor: pointer;
-    transition: 0.2s;
 }
 
 .filtre-btn:hover,
@@ -68,8 +62,6 @@
     border-color: #65c5ff;
     color: white;
 }
-
-/* ACTUALITÉS */
 
 .actualites-list {
     display: grid;
@@ -125,14 +117,9 @@
     color: #d2e5ff;
     font-size: 14px;
     line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
-
-.actualite-icon {
-    font-size: 35px;
-    margin-bottom: 15px;
-}
-
-/* AUCUNE ACTUALITÉ */
 
 .empty-news {
     grid-column: 1 / -1;
@@ -158,7 +145,63 @@
     line-height: 1.7;
 }
 
-/* RESPONSIVE */
+.gestion-annonce {
+    display: none;
+    padding: 25px;
+    margin-bottom: 35px;
+    background: rgba(8, 30, 65, 0.9);
+    border: 1px solid rgba(65, 165, 255, 0.5);
+    border-radius: 16px;
+}
+
+.gestion-annonce h2 {
+    color: #65c5ff;
+    margin-bottom: 18px;
+}
+
+.gestion-annonce input,
+.gestion-annonce textarea,
+.gestion-annonce select {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 13px;
+    border: 1px solid #397da5;
+    border-radius: 8px;
+    background: #10243a;
+    color: white;
+    font-size: 15px;
+}
+
+.gestion-annonce textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.btn-publier {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #159bd1;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-supprimer {
+    margin-top: 18px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #c0392b;
+    color: white;
+    cursor: pointer;
+}
+
+#messageActualites {
+    margin: 15px 0;
+    text-align: center;
+    color: #9bdcff;
+}
 
 @media (max-width: 750px) {
     .actualites-list {
@@ -179,72 +222,298 @@
 
     <header class="actualites-header">
         <div class="icon">📰</div>
-
         <h1>Actualités PokeOrigins</h1>
-
         <p>
             Retrouvez toutes les annonces, les nouveautés,
             les événements et les mises à jour du serveur.
         </p>
     </header>
 
+    <!-- FORMULAIRE RÉSERVÉ AU STAFF -->
+
+    <section class="gestion-annonce" id="gestionAnnonce">
+        <h2>📢 Publier une actualité</h2>
+
+        <input
+            type="text"
+            id="titreAnnonce"
+            placeholder="Titre de l'actualité"
+        >
+
+        <select id="categorieAnnonce">
+            <option value="annonce">📢 Annonce</option>
+            <option value="mise-a-jour">🔧 Mise à jour</option>
+            <option value="evenement">🎉 Événement</option>
+        </select>
+
+        <textarea
+            id="contenuAnnonce"
+            placeholder="Écris le contenu de ton actualité..."
+        ></textarea>
+
+        <button class="btn-publier" onclick="publierActualite()">
+            📢 Publier
+        </button>
+    </section>
+
+    <div id="messageActualites"></div>
+
     <!-- FILTRES -->
 
     <div class="actualites-filtres">
-
-        <button class="filtre-btn active" onclick="filterNews('all', this)">
+        <button class="filtre-btn active"
+                onclick="filterNews('all', this)">
             Toutes
         </button>
 
-        <button class="filtre-btn" onclick="filterNews('mise-a-jour', this)">
+        <button class="filtre-btn"
+                onclick="filterNews('mise-a-jour', this)">
             🔧 Mises à jour
         </button>
 
-        <button class="filtre-btn" onclick="filterNews('evenement', this)">
+        <button class="filtre-btn"
+                onclick="filterNews('evenement', this)">
             🎉 Événements
         </button>
-
     </div>
 
     <!-- LISTE DES ACTUALITÉS -->
 
     <div class="actualites-list" id="actualitesList">
-
         <div class="empty-news">
-            <div class="empty-icon">📭</div>
-
-            <h2>Aucune actualité pour le moment</h2>
-
-            <p>
-                Les premières nouvelles de PokeOrigins arriveront bientôt.
-                Revenez régulièrement pour découvrir les nouveautés !
-            </p>
+            <div class="empty-icon">⏳</div>
+            <h2>Chargement des actualités...</h2>
         </div>
-
     </div>
 
 </main>
 
 <script>
+let roleActuel = "joueur";
+let categorieActive = "all";
+
+async function initialiserActualites() {
+    const client = window.supabaseClient;
+    const message = document.getElementById("messageActualites");
+
+    if (!client) {
+        message.textContent = "Erreur : connexion à Supabase indisponible.";
+        return;
+    }
+
+    const { data: sessionData } = await client.auth.getSession();
+    const session = sessionData.session;
+
+    if (session) {
+        const { data: profil, error } = await client
+            .from("profiles")
+            .select("role")
+            .eq("id", session.user.id)
+            .single();
+
+        if (!error && profil) {
+            roleActuel = profil.role;
+        }
+    }
+
+    if (["admin", "moderateur"].includes(roleActuel)) {
+        document.getElementById("gestionAnnonce").style.display = "block";
+    }
+
+    await chargerActualites();
+}
+
+async function chargerActualites() {
+    const liste = document.getElementById("actualitesList");
+
+    const { data, error } = await window.supabaseClient
+        .from("annonces")
+        .select("id, titre, contenu, categorie, created_at")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        liste.textContent = "Erreur de chargement : " + error.message;
+        return;
+    }
+
+    liste.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        afficherAucuneActualite();
+        return;
+    }
+
+    data.forEach(annonce => {
+        const carte = document.createElement("article");
+        carte.className = "actualite-card";
+        carte.dataset.category = annonce.categorie || "annonce";
+
+        const haut = document.createElement("div");
+        haut.className = "actualite-top";
+
+        const categorie = document.createElement("span");
+        categorie.className = "actualite-categorie";
+
+        const categories = {
+            "annonce": "📢 Annonce",
+            "mise-a-jour": "🔧 Mise à jour",
+            "evenement": "🎉 Événement"
+        };
+
+        categorie.textContent =
+            categories[annonce.categorie] || "📢 Annonce";
+
+        const date = document.createElement("span");
+        date.className = "actualite-date";
+        date.textContent = new Date(annonce.created_at)
+            .toLocaleString("fr-FR");
+
+        haut.append(categorie, date);
+
+        const titre = document.createElement("h2");
+        titre.textContent = annonce.titre;
+
+        const contenu = document.createElement("p");
+        contenu.textContent = annonce.contenu;
+
+        carte.append(haut, titre, contenu);
+
+        if (["admin", "moderateur"].includes(roleActuel)) {
+            const bouton = document.createElement("button");
+            bouton.className = "btn-supprimer";
+            bouton.textContent = "🗑️ Supprimer";
+
+            bouton.addEventListener("click", () => {
+                supprimerActualite(annonce.id);
+            });
+
+            carte.appendChild(bouton);
+        }
+
+        liste.appendChild(carte);
+    });
+
+    appliquerFiltre();
+}
+
+function afficherAucuneActualite() {
+    const liste = document.getElementById("actualitesList");
+
+    const vide = document.createElement("div");
+    vide.className = "empty-news";
+
+    const icone = document.createElement("div");
+    icone.className = "empty-icon";
+    icone.textContent = "📭";
+
+    const titre = document.createElement("h2");
+    titre.textContent = "Aucune actualité pour le moment";
+
+    const texte = document.createElement("p");
+    texte.textContent =
+        "Les premières nouvelles de PokeOrigins arriveront bientôt.";
+
+    vide.append(icone, titre, texte);
+    liste.appendChild(vide);
+}
+
 function filterNews(category, button) {
+    categorieActive = category;
 
     document.querySelectorAll(".filtre-btn").forEach(btn => {
         btn.classList.remove("active");
     });
 
     button.classList.add("active");
-
-    document.querySelectorAll(".actualite-card").forEach(card => {
-
-        if (category === "all" || card.dataset.category === category) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-
-    });
-
+    appliquerFiltre();
 }
+
+function appliquerFiltre() {
+    document.querySelectorAll(".actualite-card").forEach(carte => {
+        carte.style.display =
+            categorieActive === "all" ||
+            carte.dataset.category === categorieActive
+                ? "block"
+                : "none";
+    });
+}
+
+async function publierActualite() {
+    const titre = document.getElementById("titreAnnonce").value.trim();
+    const contenu = document.getElementById("contenuAnnonce").value.trim();
+    const categorie = document.getElementById("categorieAnnonce").value;
+    const message = document.getElementById("messageActualites");
+
+    if (!["admin", "moderateur"].includes(roleActuel)) {
+        message.textContent = "⛔ Tu n'as pas l'autorisation de publier.";
+        return;
+    }
+
+    if (!titre || !contenu) {
+        message.textContent = "Remplis le titre et le contenu.";
+        return;
+    }
+
+    const { data: sessionData } =
+        await window.supabaseClient.auth.getSession();
+
+    const session = sessionData.session;
+
+    if (!session) {
+        message.textContent = "Tu dois être connecté.";
+        return;
+    }
+
+    const { error } = await window.supabaseClient
+        .from("annonces")
+        .insert({
+            titre: titre,
+            contenu: contenu,
+            categorie: categorie,
+            created_by: session.user.id
+        });
+
+    if (error) {
+        message.textContent = "Erreur : " + error.message;
+        return;
+    }
+
+    document.getElementById("titreAnnonce").value = "";
+    document.getElementById("contenuAnnonce").value = "";
+    document.getElementById("categorieAnnonce").value = "annonce";
+
+    message.textContent = "✅ Actualité publiée !";
+
+    await chargerActualites();
+}
+
+async function supprimerActualite(id) {
+    if (!["admin", "moderateur"].includes(roleActuel)) {
+        return;
+    }
+
+    if (!confirm("Veux-tu vraiment supprimer cette actualité ?")) {
+        return;
+    }
+
+    const { error } = await window.supabaseClient
+        .from("annonces")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        document.getElementById("messageActualites").textContent =
+            "Erreur de suppression : " + error.message;
+        return;
+    }
+
+    document.getElementById("messageActualites").textContent =
+        "✅ Actualité supprimée.";
+
+    await chargerActualites();
+}
+
+initialiserActualites();
 </script>
 
 {% endblock %}
