@@ -447,11 +447,10 @@
         // CONFIGURATION SUPABASE
         // =====================================
 
-        const supabaseClient = window.supabase.createClient(
-            {{ supabase_url | tojson }},
-            {{ supabase_key | tojson }}
+        window.supabaseClient = window.supabase.createClient(
+        {{ supabase_url | tojson }},
+        {{ supabase_key | tojson }}
         );
-
 
         // =====================================
         // AFFICHAGE DU COMPTE
@@ -546,7 +545,7 @@
             bouton.textContent = "Connexion en cours...";
 
             const { error } =
-                await supabaseClient.auth.signInWithOAuth({
+                await window.supabaseClient.auth.signInWithOAuth({
 
                     provider: "google",
 
@@ -582,7 +581,7 @@
             });
 
             const { error } =
-                await supabaseClient.auth.signOut();
+                await window.supabaseClient.auth.signOut();
 
             if (error) {
 
@@ -608,7 +607,7 @@
         async function initialiserCompte() {
 
             const { data, error } =
-                await supabaseClient.auth.getSession();
+                await window.supabaseClient.auth.getSession();
 
             if (error) {
 
@@ -626,7 +625,7 @@
         // ÉCOUTE DES CHANGEMENTS DE CONNEXION
         // =====================================
 
-        supabaseClient.auth.onAuthStateChange(
+        window.supabaseClient.auth.onAuthStateChange(
             (event, session) => {
 
                 if (
