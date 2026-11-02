@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -47,7 +48,9 @@
             background-attachment: fixed;
         }
 
-        /* HEADER */
+        /* =====================================
+           HEADER
+        ===================================== */
 
         .site-header {
             height: 85px;
@@ -87,13 +90,21 @@
             background: rgba(0, 145, 255, 0.4);
         }
 
-        /* CONNEXION MINECRAFT */
+        /* =====================================
+           COMPTE GOOGLE
+        ===================================== */
 
-        .minecraft-connect {
+        .account-area {
             position: absolute;
             right: 25px;
             top: 50%;
             transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .account-button {
             padding: 12px 18px;
             border: 1px solid #21baff;
             border-radius: 10px;
@@ -102,16 +113,46 @@
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
+            text-decoration: none;
             transition: 0.2s;
         }
 
-        .minecraft-connect:hover {
+        .account-button:hover {
             background: rgba(0, 145, 255, 0.4);
             color: white;
             box-shadow: 0 0 15px rgba(0, 160, 255, 0.35);
         }
 
-        /* MENU */
+        .account-user {
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .account-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #45eaff;
+        }
+
+        .account-logout {
+            padding: 9px 12px;
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            border-radius: 8px;
+            background: rgba(180, 30, 30, 0.2);
+            color: #ffbaba;
+            cursor: pointer;
+        }
+
+        .account-logout:hover {
+            background: rgba(220, 40, 40, 0.4);
+        }
+
+        /* =====================================
+           MENU LATÉRAL
+        ===================================== */
 
         .menu-overlay {
             position: fixed;
@@ -182,131 +223,18 @@
             border-color: #45eaff;
         }
 
-        /* FENÊTRE DE CONNEXION */
-
-        .connection-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 300;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            background: rgba(0, 5, 20, 0.8);
-            backdrop-filter: blur(5px);
-        }
-
-        .connection-overlay.active {
-            display: flex;
-        }
-
-        .connection-box {
-            position: relative;
-            width: 100%;
-            max-width: 430px;
-            padding: 32px;
-            background: linear-gradient(145deg, #0b2850, #06162f);
-            border: 1px solid #269fff;
-            border-radius: 18px;
-            box-shadow: 0 0 35px rgba(0, 130, 255, 0.25);
-        }
-
-        .connection-close {
-            position: absolute;
-            top: 12px;
-            right: 17px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 27px;
-            cursor: pointer;
-        }
-
-        .connection-icon {
-            font-size: 42px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .connection-box h2 {
-            text-align: center;
-            color: #65c5ff;
-            margin-bottom: 12px;
-        }
-
-        .connection-description {
-            color: #c5ddf5;
-            text-align: center;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .connection-box label {
-            display: block;
-            color: #bce5ff;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .connection-box input {
-            width: 100%;
-            padding: 13px;
-            margin-bottom: 18px;
-            border-radius: 9px;
-            border: 1px solid #267fc0;
-            background: #061a35;
-            color: white;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .connection-box input:focus {
-            border-color: #55c5ff;
-            box-shadow: 0 0 8px rgba(50, 170, 255, 0.3);
-        }
-
-        .connection-submit {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 9px;
-            background: linear-gradient(90deg, #0876d1, #13a9ed);
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .connection-submit:hover {
-            filter: brightness(1.15);
-        }
-
-        .connection-step {
-            display: none;
-        }
-
-        .connection-step.active {
-            display: block;
-        }
-
-        .connection-message {
-            margin-top: 15px;
-            color: #ffd477;
-            font-size: 13px;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        /* CONTENU */
+        /* =====================================
+           CONTENU
+        ===================================== */
 
         .page-content {
             flex: 1 0 auto;
             width: 100%;
         }
 
-        /* PIED DE PAGE */
+        /* =====================================
+           PIED DE PAGE
+        ===================================== */
 
         .site-footer {
             width: 100%;
@@ -325,9 +253,12 @@
             font-weight: bold;
         }
 
-        /* RESPONSIVE */
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
 
         @media (max-width: 600px) {
+
             .site-header {
                 height: 70px;
             }
@@ -343,14 +274,23 @@
                 font-size: 23px;
             }
 
-            .minecraft-connect {
+            .account-area {
                 right: 10px;
+            }
+
+            .account-button {
                 padding: 10px;
                 font-size: 11px;
             }
 
-            .connection-box {
-                padding: 25px 20px;
+            .account-avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .account-logout {
+                padding: 8px;
+                font-size: 11px;
             }
         }
     </style>
@@ -358,7 +298,9 @@
 
 <body class="{% if request.path.startswith('/wiki') %}fond-wiki{% endif %}">
 
-    <!-- HEADER -->
+    <!-- =====================================
+         HEADER
+    ===================================== -->
 
     <header class="site-header">
 
@@ -372,15 +314,53 @@
 
         <a href="/" class="site-logo">⚡ PokeOrigins</a>
 
-        <button class="minecraft-connect" onclick="openConnection()">
-            🎮 Connecter Minecraft
-        </button>
+        <!-- COMPTE GOOGLE -->
+
+        <div class="account-area">
+
+            <button
+                class="account-button"
+                id="googleLoginButton"
+                onclick="connexionGoogle()"
+            >
+                🔐 Se connecter avec Google
+            </button>
+
+            <div class="account-user" id="accountUser">
+
+                <img
+                    src="/static/image/icons/logo.png"
+                    alt="Avatar"
+                    class="account-avatar"
+                    id="accountAvatar"
+                >
+
+                <a href="/compte" class="account-button">
+                    👤 Mon compte
+                </a>
+
+                <button
+                    class="account-logout"
+                    onclick="deconnexionGoogle()"
+                >
+                    Déconnexion
+                </button>
+
+            </div>
+
+        </div>
 
     </header>
 
-    <!-- MENU -->
+    <!-- =====================================
+         MENU
+    ===================================== -->
 
-    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div
+        class="menu-overlay"
+        id="menuOverlay"
+        onclick="toggleMenu()"
+    ></div>
 
     <nav class="side-menu" id="sideMenu" aria-label="Navigation principale">
 
@@ -404,101 +384,37 @@
 
     </nav>
 
-    <!-- FENÊTRE DE CONNEXION -->
-
-    <div class="connection-overlay" id="connectionOverlay">
-
-        <div class="connection-box">
-
-            <button
-                class="connection-close"
-                onclick="closeConnection()"
-                aria-label="Fermer"
-            >×</button>
-
-            <div class="connection-icon">🔗</div>
-
-            <h2>Connexion Minecraft</h2>
-
-            <p class="connection-description">
-                Associe ton compte Minecraft à ton compte PokeOrigins.
-            </p>
-
-            <!-- ÉTAPE 1 -->
-
-            <div class="connection-step active" id="connectionStep1">
-
-                <label for="minecraftUsername">Pseudo Minecraft</label>
-
-                <input
-                    type="text"
-                    id="minecraftUsername"
-                    placeholder="Exemple : tonPseudo"
-                    maxlength="16"
-                    autocomplete="off"
-                >
-
-                <button
-                    class="connection-submit"
-                    onclick="requestMinecraftCode()"
-                >
-                    Demander un code
-                </button>
-
-                <p class="connection-message" id="connectionMessage1">
-                    Tu devras être connecté au serveur Minecraft pour recevoir ton code.
-                </p>
-
-            </div>
-
-            <!-- ÉTAPE 2 -->
-
-            <div class="connection-step" id="connectionStep2">
-
-                <label for="minecraftCode">Code de vérification</label>
-
-                <input
-                    type="text"
-                    id="minecraftCode"
-                    placeholder="Entre ton code"
-                    maxlength="8"
-                    autocomplete="off"
-                >
-
-                <button
-                    class="connection-submit"
-                    onclick="verifyMinecraftCode()"
-                >
-                    Confirmer la connexion
-                </button>
-
-                <p class="connection-message" id="connectionMessage2">
-                    Entre ici le code reçu dans le chat Minecraft.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- CONTENU DES PAGES -->
+    <!-- =====================================
+         CONTENU DES PAGES
+    ===================================== -->
 
     <main class="page-content">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- COPYRIGHT SUR TOUTES LES PAGES -->
+    <!-- =====================================
+         COPYRIGHT
+    ===================================== -->
 
     <footer class="site-footer">
         © 2026 <span>PokeOrigins</span> — Tous droits réservés.
     </footer>
 
-    <!-- JAVASCRIPT -->
+    <!-- =====================================
+         BIBLIOTHÈQUE SUPABASE
+    ===================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- =====================================
+         JAVASCRIPT
+    ===================================== -->
 
     <script>
 
-        /* MENU */
+        // =====================================
+        // MENU
+        // =====================================
 
         function toggleMenu() {
 
@@ -519,77 +435,231 @@
 
             document.getElementById("sideMenu").classList.remove("active");
             document.getElementById("menuOverlay").classList.remove("active");
-            document.getElementById("menuButton").setAttribute("aria-expanded", "false");
 
+            document.getElementById("menuButton").setAttribute(
+                "aria-expanded",
+                "false"
+            );
         }
 
-        /* FENÊTRE DE CONNEXION */
 
-        function openConnection() {
-            document.getElementById("connectionOverlay").classList.add("active");
-        }
+        // =====================================
+        // CONFIGURATION SUPABASE
+        // =====================================
 
-        function closeConnection() {
-            document.getElementById("connectionOverlay").classList.remove("active");
-        }
+        const supabaseClient = window.supabase.createClient(
+            {{ supabase_url | tojson }},
+            {{ supabase_key | tojson }}
+        );
 
-        /* ÉTAPE 1 - DEMANDE DE CODE */
 
-        function requestMinecraftCode() {
+        // =====================================
+        // AFFICHAGE DU COMPTE
+        // =====================================
 
-            const pseudo = document.getElementById("minecraftUsername").value.trim();
-            const message = document.getElementById("connectionMessage1");
+        function afficherCompte(utilisateur) {
 
-            if (!/^[A-Za-z0-9_]{3,16}$/.test(pseudo)) {
+            const boutonConnexion =
+                document.getElementById("googleLoginButton");
 
-                message.textContent = "Veuillez entrer un pseudo Minecraft valide.";
+            const compte =
+                document.getElementById("accountUser");
+
+            if (!utilisateur) {
+
+                boutonConnexion.style.display = "block";
+                compte.style.display = "none";
+
                 return;
-
             }
 
-            message.textContent =
-                "L'interface est prête. L'envoi réel du code sera activé lors de la connexion au serveur.";
+            boutonConnexion.style.display = "none";
+            compte.style.display = "flex";
 
-            // La demande au serveur Fabric sera ajoutée ici.
+            const metadata = utilisateur.user_metadata || {};
+
+            const avatar =
+                metadata.avatar_url ||
+                metadata.picture ||
+                "/static/image/icons/logo.png";
+
+            document.getElementById("accountAvatar").src = avatar;
         }
 
-        /* ÉTAPE 2 - VÉRIFICATION */
 
-        function verifyMinecraftCode() {
+        // =====================================
+        // SYNCHRONISATION AVEC FLASK
+        // =====================================
 
-            const code = document.getElementById("minecraftCode").value.trim();
-            const message = document.getElementById("connectionMessage2");
+        async function actualiserCompte(session) {
 
-            if (!/^[A-Za-z0-9]{4,8}$/.test(code)) {
+            if (!session) {
 
-                message.textContent = "Veuillez entrer un code valide.";
+                afficherCompte(null);
+
+                await fetch("/auth/logout", {
+                    method: "POST"
+                });
+
                 return;
-
             }
 
-            message.textContent =
-                "La vérification sera activée lorsque le serveur Minecraft sera relié au site.";
+            const reponse = await fetch("/auth/session", {
 
-            // La vérification réelle sera effectuée par Flask auprès du serveur.
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    access_token: session.access_token
+                })
+
+            });
+
+            if (!reponse.ok) {
+
+                afficherCompte(null);
+
+                console.error(
+                    "Impossible de synchroniser le compte."
+                );
+
+                return;
+            }
+
+            afficherCompte(session.user);
         }
 
-        /* FERMETURE AVEC ÉCHAP */
+
+        // =====================================
+        // CONNEXION GOOGLE
+        // =====================================
+
+        async function connexionGoogle() {
+
+            const bouton =
+                document.getElementById("googleLoginButton");
+
+            bouton.disabled = true;
+            bouton.textContent = "Connexion en cours...";
+
+            const { error } =
+                await supabaseClient.auth.signInWithOAuth({
+
+                    provider: "google",
+
+                    options: {
+                        redirectTo: window.location.origin
+                    }
+
+                });
+
+            if (error) {
+
+                console.error(error);
+
+                alert(
+                    "Impossible de se connecter avec Google."
+                );
+
+                bouton.disabled = false;
+                bouton.textContent =
+                    "🔐 Se connecter avec Google";
+            }
+        }
+
+
+        // =====================================
+        // DÉCONNEXION
+        // =====================================
+
+        async function deconnexionGoogle() {
+
+            await fetch("/auth/logout", {
+                method: "POST"
+            });
+
+            const { error } =
+                await supabaseClient.auth.signOut();
+
+            if (error) {
+
+                console.error(error);
+
+                alert(
+                    "La déconnexion a rencontré un problème."
+                );
+
+                return;
+            }
+
+            afficherCompte(null);
+
+            window.location.href = "/";
+        }
+
+
+        // =====================================
+        // INITIALISATION DU COMPTE
+        // =====================================
+
+        async function initialiserCompte() {
+
+            const { data, error } =
+                await supabaseClient.auth.getSession();
+
+            if (error) {
+
+                console.error(error);
+                afficherCompte(null);
+
+                return;
+            }
+
+            await actualiserCompte(data.session);
+        }
+
+
+        // =====================================
+        // ÉCOUTE DES CHANGEMENTS DE CONNEXION
+        // =====================================
+
+        supabaseClient.auth.onAuthStateChange(
+            (event, session) => {
+
+                if (
+                    event === "SIGNED_IN" ||
+                    event === "TOKEN_REFRESHED" ||
+                    event === "SIGNED_OUT"
+                ) {
+
+                    setTimeout(() => {
+                        actualiserCompte(session);
+                    }, 0);
+
+                }
+
+            }
+        );
+
+
+        // =====================================
+        // LANCEMENT
+        // =====================================
+
+        initialiserCompte();
+
+
+        // =====================================
+        // FERMETURE AVEC ÉCHAP
+        // =====================================
 
         document.addEventListener("keydown", function(event) {
 
             if (event.key === "Escape") {
                 closeMenu();
-                closeConnection();
-            }
-
-        });
-
-        /* FERMETURE EN CLIQUANT AUTOUR */
-
-        document.getElementById("connectionOverlay").addEventListener("click", function(event) {
-
-            if (event.target === this) {
-                closeConnection();
             }
 
         });

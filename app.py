@@ -1,5 +1,7 @@
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
+import requests
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
@@ -7,6 +9,28 @@ import os
 import hashlib
 
 app = Flask(__name__)
+
+# ==========================================
+# CONFIGURATION SUPABASE ET SESSIONS
+# ==========================================
+
+app.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(32)
+
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax"
+)
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+@app.context_processor
+def injecter_configuration_supabase():
+    return {
+        "supabase_url": SUPABASE_URL,
+        "supabase_key": SUPABASE_KEY
+    }
 
 # ==========================================
 # CONFIGURATION
@@ -26,6 +50,219 @@ def date_actuelle():
 
 def semaine_actuelle():
     return datetime.now(FUSEAU_HORAIRE).strftime("%G-W%V")
+
+
+# ==========================================
+# AUTHENTIFICATION GOOGLE / SUPABASE
+# ==========================================
+
+def verifier_token_supabase(token):
+    """Vérifie le jeton auprès de Supabase."""
+
+    if not SUPABASE_URL or not SUPABASE_KEY or not token:
+        return None
+
+    try:
+        reponse = requests.get(
+            f"{SUPABASE_URL}/auth/v1/user",
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {token}"
+            },
+            timeout=10
+        )
+
+        if reponse.status_code != 200:
+            return None
+
+        return reponse.json()
+
+    except requests.RequestException:
+        return None
+
+
+@app.route("/auth/session", methods=["POST"])
+def auth_session():
+
+    donnees = request.get_json(silent=True) or {}
+    token = donnees.get("access_token")
+
+    utilisateur = verifier_token_supabase(token)
+
+    if not utilisateur:
+        return jsonify({
+            "succes": False,
+            "erreur": "Connexion Supabase invalide."
+        }), 401
+
+    identifiant = utilisateur.get("id")
+    metadata = utilisateur.get("user_metadata") or {}
+
+    nom = (
+        metadata.get("full_name")
+        or metadata.get("name")
+        or utilisateur.get("email", "").split("@")[0]
+    )
+
+    profil = {
+        "id": identifiant,
+        "username": nom
+    }
+
+    try:
+        reponse = requests.post(
+            f"{SUPABASE_URL}/rest/v1/profiles?on_conflict=id",
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Prefer": "resolution=merge-duplicates,return=minimal"
+            },
+            json=profil,
+            timeout=10
+        )
+
+        if reponse.status_code not in (200, 201, 204):
+            return jsonify({
+                "succes": False,
+                "erreur": "Impossible de créer le profil."
+            }), 500
+
+    except requests.RequestException:
+        return jsonify({
+            "succes": False,
+            "erreur": "Erreur de connexion à Supabase."
+        }), 503
+
+    session.clear()
+
+    session["utilisateur"] = {
+        "id": identifiant,
+        "nom": nom,
+        "email": utilisateur.get("email"),
+        "avatar": metadata.get("avatar_url") or metadata.get("picture")
+    }
+
+    return jsonify({
+        "succes": True,
+        "utilisateur": session["utilisateur"]
+    })
+
+
+@app.route("/auth/logout", methods=["POST"])
+def auth_logout():
+
+    session.clear()
+
+    return jsonify({"succes": True})
+
+
+@app.route("/api/compte", methods=["GET"])
+def api_compte():
+
+    utilisateur = session.get("utilisateur")
+
+    if not utilisateur:
+        return jsonify({
+            "connecte": False
+        }), 401
+
+    token = request.headers.get("Authorization", "").replace(
+        "Bearer ", "", 1
+    )
+
+    utilisateur_verifie = verifier_token_supabase(token)
+
+    if not utilisateur_verifie or utilisateur_verifie.get("id") != utilisateur["id"]:
+        session.clear()
+        return jsonify({"connecte": False}), 401
+
+    try:
+        reponse = requests.get(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {token}"
+            },
+            params={
+                "select": "username,minecraft_username,minecraft_verified",
+                "id": f"eq.{utilisateur['id']}"
+            },
+            timeout=10
+        )
+
+        if reponse.status_code != 200:
+            return jsonify({"erreur": "Lecture du profil impossible."}), 500
+
+        profils = reponse.json()
+
+        profil = profils[0] if profils else {}
+
+        return jsonify({
+            "connecte": True,
+            "utilisateur": utilisateur,
+            "profil": profil
+        })
+
+    except requests.RequestException:
+        return jsonify({"erreur": "Erreur Supabase."}), 503
+
+
+@app.route("/api/compte/minecraft", methods=["POST"])
+def enregistrer_pseudo_minecraft():
+
+    utilisateur = session.get("utilisateur")
+
+    if not utilisateur:
+        return jsonify({"erreur": "Connexion requise."}), 401
+
+    token = request.headers.get("Authorization", "").replace(
+        "Bearer ", "", 1
+    )
+
+    utilisateur_verifie = verifier_token_supabase(token)
+
+    if not utilisateur_verifie or utilisateur_verifie.get("id") != utilisateur["id"]:
+        return jsonify({"erreur": "Authentification invalide."}), 401
+
+    donnees = request.get_json(silent=True) or {}
+    pseudo = donnees.get("minecraft_username", "").strip()
+
+    if not re.fullmatch(r"[A-Za-z0-9_]{3,16}", pseudo):
+        return jsonify({
+            "erreur": "Pseudo Minecraft invalide."
+        }), 400
+
+    try:
+        reponse = requests.patch(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal"
+            },
+            params={
+                "id": f"eq.{utilisateur['id']}"
+            },
+            json={
+                "minecraft_username": pseudo
+            },
+            timeout=10
+        )
+
+        if reponse.status_code not in (200, 204):
+            return jsonify({
+                "erreur": "Impossible d'enregistrer le pseudo."
+            }), 500
+
+        return jsonify({
+            "succes": True,
+            "message": "Pseudo Minecraft enregistré."
+        })
+
+    except requests.RequestException:
+        return jsonify({"erreur": "Erreur Supabase."}), 503
 
 
 # ==========================================
@@ -611,6 +848,10 @@ def presentation():
 # ==========================================
 # JOUEUR
 # ==========================================
+
+@app.route("/compte")
+def page_compte():
+    return render_template("compte.html")
 
 @app.route("/joueur")
 def joueur():

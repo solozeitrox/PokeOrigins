@@ -1,0 +1,320 @@
+
+{% extends "base.html" %}
+
+{% block title %}Mon compte - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.compte-page {
+    max-width: 850px;
+    margin: 50px auto;
+    padding: 25px;
+    color: white;
+}
+
+.compte-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.compte-header h1 {
+    color: #45eaff;
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.compte-card {
+    background: rgba(3, 22, 55, 0.92);
+    border: 1px solid #159dff;
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 25px rgba(0, 140, 255, 0.12);
+}
+
+.profil-identite {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.profil-avatar {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    border: 3px solid #45eaff;
+    object-fit: cover;
+}
+
+.profil-identite h2 {
+    color: #45eaff;
+    margin-bottom: 8px;
+}
+
+.profil-identite p {
+    color: #b8d9f5;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.compte-card h3 {
+    color: #45eaff;
+    margin-bottom: 18px;
+}
+
+.compte-label {
+    display: block;
+    color: #bceaff;
+    margin-bottom: 9px;
+}
+
+.compte-input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #267fc0;
+    border-radius: 9px;
+    background: #061a35;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.compte-input:focus {
+    border-color: #45eaff;
+    box-shadow: 0 0 10px rgba(69, 234, 255, 0.2);
+}
+
+.compte-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(90deg, #0876d1, #13a9ed);
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.compte-button:hover {
+    filter: brightness(1.15);
+}
+
+.compte-message {
+    margin-top: 15px;
+    text-align: center;
+    color: #45eaff;
+    font-size: 14px;
+}
+
+.statut {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: rgba(255, 170, 0, 0.15);
+    border: 1px solid #ffb347;
+    color: #ffd477;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .compte-page {
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .compte-card {
+        padding: 20px;
+    }
+
+    .profil-identite {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<div class="compte-page">
+
+    <div class="compte-header">
+        <h1>👤 Mon compte</h1>
+        <p>Gère tes informations personnelles PokeOrigins.</p>
+    </div>
+
+    <div class="compte-card">
+
+        <div class="profil-identite">
+
+            <img
+                src="/static/image/icons/logo.png"
+                id="profilAvatar"
+                class="profil-avatar"
+                alt="Avatar"
+            >
+
+            <div>
+                <h2 id="profilNom">Chargement...</h2>
+                <p id="profilEmail"></p>
+            </div>
+
+        </div>
+
+        <h3>🔐 Informations du compte</h3>
+
+        <p style="color:#b8d9f5;line-height:1.6;">
+            Ton compte Google est associé à ton profil PokeOrigins.
+        </p>
+
+    </div>
+
+    <div class="compte-card">
+
+        <h3>🎮 Compte Minecraft</h3>
+
+        <label class="compte-label" for="pseudoMinecraft">
+            Ton pseudo Minecraft
+        </label>
+
+        <input
+            type="text"
+            id="pseudoMinecraft"
+            class="compte-input"
+            placeholder="Entre ton pseudo Minecraft"
+            maxlength="16"
+        >
+
+        <button
+            class="compte-button"
+            onclick="enregistrerMinecraft()"
+        >
+            💾 Enregistrer mon pseudo
+        </button>
+
+        <p class="compte-message" id="messageMinecraft"></p>
+
+        <div style="margin-top:22px;">
+            <p style="color:#b8d9f5;margin-bottom:10px;">
+                Statut du compte Minecraft :
+            </p>
+
+            <span class="statut" id="statutMinecraft">
+                🟠 Non vérifié
+            </span>
+        </div>
+
+        <p style="color:#91b6d5;font-size:13px;margin-top:18px;line-height:1.5;">
+            L'enregistrement du pseudo ne vérifie pas encore que tu possèdes
+            ce compte Minecraft. La vérification sera activée avec le serveur.
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+async function chargerCompte() {
+
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+        window.location.href = "/";
+        return;
+    }
+
+    const session = data.session;
+
+    const reponse = await fetch("/api/compte", {
+        headers: {
+            "Authorization": "Bearer " + session.access_token
+        }
+    });
+
+    if (!reponse.ok) {
+        document.getElementById("profilNom").textContent =
+            "Impossible de charger le compte";
+        return;
+    }
+
+    const donnees = await reponse.json();
+
+    const utilisateur = donnees.utilisateur;
+    const profil = donnees.profil || {};
+    const metadata = session.user.user_metadata || {};
+
+    document.getElementById("profilNom").textContent =
+        metadata.full_name ||
+        metadata.name ||
+        utilisateur.nom ||
+        "Joueur PokeOrigins";
+
+    document.getElementById("profilEmail").textContent =
+        session.user.email || "";
+
+    document.getElementById("profilAvatar").src =
+        metadata.avatar_url ||
+        metadata.picture ||
+        "/static/image/icons/logo.png";
+
+    document.getElementById("pseudoMinecraft").value =
+        profil.minecraft_username || "";
+
+    if (profil.minecraft_verified) {
+        document.getElementById("statutMinecraft").textContent =
+            "🟢 Vérifié";
+    } else {
+        document.getElementById("statutMinecraft").textContent =
+            "🟠 Non vérifié";
+    }
+}
+
+async function enregistrerMinecraft() {
+
+    const pseudo = document
+        .getElementById("pseudoMinecraft")
+        .value.trim();
+
+    const message = document.getElementById("messageMinecraft");
+
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+        message.textContent = "Tu dois être connecté.";
+        return;
+    }
+
+    const reponse = await fetch("/api/compte/minecraft", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + data.session.access_token
+        },
+
+        body: JSON.stringify({
+            minecraft_username: pseudo
+        })
+
+    });
+
+    const resultat = await reponse.json();
+
+    if (!reponse.ok) {
+        message.textContent =
+            resultat.erreur || "Une erreur est survenue.";
+        return;
+    }
+
+    message.textContent = "✅ Ton pseudo Minecraft a été enregistré.";
+
+    document.getElementById("statutMinecraft").textContent =
+        "🟠 Non vérifié";
+}
+
+chargerCompte();
+</script>
+
+{% endblock %}
