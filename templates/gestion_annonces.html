@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des annonces - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+.annonces-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 25px;
+    color: white;
+}
+
+.annonces-page h1 {
+    text-align: center;
+    color: #55c8ff;
+    margin-bottom: 30px;
+}
+
+.annonce-form, .annonce-card {
+    background: rgba(15, 35, 60, 0.92);
+    border: 1px solid rgba(85, 200, 255, 0.35);
+    border-radius: 15px;
+    padding: 22px;
+    margin-bottom: 25px;
+}
+
+.annonce-form input, .annonce-form textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    border: 1px solid #397da5;
+    border-radius: 8px;
+    background: #10243a;
+    color: white;
+    font-size: 15px;
+}
+
+.annonce-form textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.annonce-form button, .supprimer-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.annonce-form button {
+    background: #159bd1;
+    color: white;
+}
+
+.supprimer-btn {
+    background: #c0392b;
+    color: white;
+}
+
+.annonce-card h3 {
+    color: #55c8ff;
+    margin-bottom: 10px;
+}
+
+.annonce-date {
+    color: #a8b8c8;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.annonce-contenu {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+#message {
+    margin: 15px 0;
+    text-align: center;
+}
+
+#zoneGestion {
+    display: none;
+}
+</style>
+
+<div class="annonces-page">
+    <h1>📢 Gestion des annonces</h1>
+
+    <div id="message"></div>
+
+    <div id="zoneGestion">
+        <div class="annonce-form">
+            <h2>Créer une annonce</h2>
+
+            <input type="text" id="titreAnnonce"
+                   placeholder="Titre de l'annonce">
+
+            <textarea id="contenuAnnonce"
+                      placeholder="Contenu de l'annonce"></textarea>
+
+            <button onclick="publierAnnonce()">
+                📢 Publier l'annonce
+            </button>
+        </div>
+
+        <h2>📋 Annonces publiées</h2>
+        <div id="listeAnnonces"></div>
+    </div>
+</div>
+
+<script>
+async function initialiserGestionAnnonces() {
+    const message = document.getElementById("message");
+
+    const { data: { session }, error: sessionError } =
+        await window.supabaseClient.auth.getSession();
+
+    if (sessionError || !session) {
+        message.textContent = "Tu dois être connecté.";
+        return;
+    }
+
+    const { data: profil, error } = await window.supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+    if (error || !profil || !["admin", "moderateur"].includes(profil.role)) {
+        message.textContent = "⛔ Tu n'as pas accès à cette page.";
+        return;
+    }
+
+    document.getElementById("zoneGestion").style.display = "block";
+    await chargerAnnonces();
+}
+
+async function publierAnnonce() {
+    const titre = document.getElementById("titreAnnonce").value.trim();
+    const contenu = document.getElementById("contenuAnnonce").value.trim();
+    const message = document.getElementById("message");
+
+    if (!titre || !contenu) {
+        message.textContent = "Remplis le titre et le contenu.";
+        return;
+    }
+
+    const { data: { session } } =
+        await window.supabaseClient.auth.getSession();
+
+    const { error } = await window.supabaseClient
+        .from("annonces")
+        .insert({
+            titre: titre,
+            contenu: contenu,
+            created_by: session.user.id
+        });
+
+    if (error) {
+        message.textContent = "Erreur : " + error.message;
+        return;
+    }
+
+    document.getElementById("titreAnnonce").value = "";
+    document.getElementById("contenuAnnonce").value = "";
+
+    message.textContent = "✅ Annonce publiée !";
+    await chargerAnnonces();
+}
+
+async function chargerAnnonces() {
+    const liste = document.getElementById("listeAnnonces");
+
+    const { data, error } = await window.supabaseClient
+        .from("annonces")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        liste.textContent = "Impossible de charger les annonces : " + error.message;
+        return;
+    }
+
+    liste.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        liste.textContent = "Aucune annonce pour le moment.";
+        return;
+    }
+
+    data.forEach(annonce => {
+        const carte = document.createElement("div");
+        carte.className = "annonce-card";
+
+        const titre = document.createElement("h3");
+        titre.textContent = annonce.titre;
+
+        const date = document.createElement("div");
+        date.className = "annonce-date";
+        date.textContent = new Date(annonce.created_at).toLocaleString("fr-FR");
+
+        const contenu = document.createElement("div");
+        contenu.className = "annonce-contenu";
+        contenu.textContent = annonce.contenu;
+
+        const bouton = document.createElement("button");
+        bouton.className = "supprimer-btn";
+        bouton.textContent = "🗑️ Supprimer";
+        bouton.addEventListener("click", () => supprimerAnnonce(annonce.id));
+
+        carte.append(titre, date, contenu, bouton);
+        liste.appendChild(carte);
+    });
+}
+
+async function supprimerAnnonce(id) {
+    if (!confirm("Veux-tu vraiment supprimer cette annonce ?")) return;
+
+    const { error } = await window.supabaseClient
+        .from("annonces")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        document.getElementById("message").textContent =
+            "Erreur lors de la suppression : " + error.message;
+        return;
+    }
+
+    document.getElementById("message").textContent =
+        "✅ Annonce supprimée !";
+
+    await chargerAnnonces();
+}
+
+initialiserGestionAnnonces();
+</script>
+
+{% endblock %}
