@@ -117,7 +117,7 @@ def auth_session():
                 "apikey": SUPABASE_KEY,
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json",
-                "Prefer": "resolution=merge-duplicates,return=minimal"
+                "Prefer": "resolution=ignore-duplicates,return=minimal"
             },
             json=profil,
             timeout=10
