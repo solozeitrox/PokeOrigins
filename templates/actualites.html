@@ -513,7 +513,34 @@ async function supprimerActualite(id) {
     await chargerActualites();
 }
 
-initialiserActualites();
+async function demarrerActualites() {
+    const message = document.getElementById("messageActualites");
+
+    try {
+        let essais = 0;
+
+        while (!window.supabaseClient && essais < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            essais++;
+        }
+
+        if (!window.supabaseClient) {
+            throw new Error("Supabase n'est pas initialisé.");
+        }
+
+        await initialiserActualites();
+
+    } catch (erreur) {
+        console.error("Erreur de chargement :", erreur);
+        message.textContent = "Impossible de charger les actualités.";
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", demarrerActualites);
+} else {
+    demarrerActualites();
+}
 </script>
 
 {% endblock %}
