@@ -123,10 +123,12 @@ def auth_session():
         )
 
         if reponse.status_code not in (200, 201, 204):
-            return jsonify({
-                "succes": False,
-                "erreur": "Impossible de créer le profil."
-            }), 500
+    print("ERREUR SUPABASE PROFIL :", reponse.status_code, reponse.text)
+
+    return jsonify({
+        "succes": False,
+        "erreur": "Impossible de créer le profil."
+    }), 500
 
     except requests.RequestException:
         return jsonify({
