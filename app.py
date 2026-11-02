@@ -55,7 +55,7 @@ def joueur():
 
     pokedex = {
         "captures": 0,
-        "total": 151,
+        "total": 1025,
         "pourcentage": 0
     }
 
@@ -118,7 +118,7 @@ def pokedex_joueur():
         }
     ]
 
-    total_pokemons = 151
+    total_pokemons = 1025
     captures = sum(1 for p in pokemons if p["capture"])
 
     pokedex = {

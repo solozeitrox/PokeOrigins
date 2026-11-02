@@ -108,6 +108,7 @@
 
 .profil-infos {
     flex: 1;
+    min-width: 0;
 }
 
 .profil-infos h2 {
@@ -133,6 +134,8 @@
 .xp-infos {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
     color: #c5d7e8;
     font-size: 13px;
     margin-bottom: 7px;
@@ -151,6 +154,7 @@
     height: 100%;
     background: linear-gradient(90deg, #0876d1, #45eaff);
     border-radius: 20px;
+    transition: width .5s;
 }
 
 /* TITRES */
@@ -240,6 +244,7 @@
     height: 100%;
     background: linear-gradient(90deg, #0876d1, #45eaff);
     border-radius: 20px;
+    transition: width .5s;
 }
 
 .pokemon-grid {
@@ -349,7 +354,14 @@
     font-size: 14px;
 }
 
+/* RESPONSIVE */
+
 @media(max-width: 600px) {
+    .joueur-page {
+        margin: 20px auto;
+        padding: 12px;
+    }
+
     .profil-card {
         flex-direction: column;
         text-align: center;
@@ -361,6 +373,18 @@
 
     .joueur-header h1 {
         font-size: 29px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat-card {
+        padding: 15px 8px;
+    }
+
+    .stat-value {
+        font-size: 21px;
     }
 }
 </style>
@@ -376,9 +400,9 @@
     </div>
 
 
-    <!-- MESSAGE DE CONNEXION -->
+    <!-- VÉRIFICATION DE CONNEXION -->
 
-    {% if not joueur.minecraft_lie %}
+    {% if not joueur.minecraft_lie|default(false) %}
 
     <div class="connexion-requise">
 
@@ -401,8 +425,7 @@
 
     </div>
 
-    {% endif %}
-
+    {% else %}
 
     <!-- PROFIL -->
 
@@ -412,32 +435,33 @@
 
         <div class="profil-infos">
 
-            <h2>{{ joueur.pseudo }}</h2>
+            <h2>{{ joueur.pseudo|default("Joueur") }}</h2>
 
             <p>
                 🎮 Minecraft :
-                {% if joueur.minecraft_lie %}
-                    {{ joueur.pseudo_minecraft }}
-                {% else %}
-                    Non connecté
-                {% endif %}
+                {{ joueur.pseudo_minecraft|default("Non renseigné") }}
             </p>
 
             <p class="niveau">
-                ⭐ Niveau {{ joueur.niveau }}
+                ⭐ Niveau {{ joueur.niveau|default(1) }}
             </p>
 
             <div class="xp-container">
 
                 <div class="xp-infos">
                     <span>Expérience</span>
-                    <span>{{ joueur.xp }} / {{ joueur.xp_suivant }} XP</span>
+                    <span>
+                        {{ joueur.xp|default(0) }}
+                        /
+                        {{ joueur.xp_suivant|default(100) }} XP
+                    </span>
                 </div>
 
                 <div class="xp-bar">
-                    <div class="xp-progress"
-                         style="width: {{ joueur.progression_xp }}%;">
-                    </div>
+                    <div
+                        class="xp-progress"
+                        style="width: {{ [100, [0, joueur.progression_xp|default(0)|float]|max]|min }}%;"
+                    ></div>
                 </div>
 
             </div>
@@ -455,49 +479,49 @@
 
         <div class="stat-card">
             <div class="stat-icon">🎯</div>
-            <div class="stat-value">{{ stats.captures }}</div>
+            <div class="stat-value">{{ stats.captures|default(0) }}</div>
             <div class="stat-label">Pokémon capturés</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🔎</div>
-            <div class="stat-value">{{ stats.decouverts }}</div>
+            <div class="stat-value">{{ stats.decouverts|default(0) }}</div>
             <div class="stat-label">Pokémon découverts</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">⚔️</div>
-            <div class="stat-value">{{ stats.combats }}</div>
+            <div class="stat-value">{{ stats.combats|default(0) }}</div>
             <div class="stat-label">Combats effectués</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🏆</div>
-            <div class="stat-value">{{ stats.victoires }}</div>
+            <div class="stat-value">{{ stats.victoires|default(0) }}</div>
             <div class="stat-label">Victoires</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">👑</div>
-            <div class="stat-value">{{ stats.champions }}</div>
+            <div class="stat-value">{{ stats.champions|default(0) }}</div>
             <div class="stat-label">Champions vaincus</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">💰</div>
-            <div class="stat-value">{{ "{:,}".format(stats.argent).replace(",", " ") }}</div>
+            <div class="stat-value">{{ "{:,}".format(stats.argent|default(0)|int).replace(",", " ") }}</div>
             <div class="stat-label">Pokédollars</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">🎖️</div>
-            <div class="stat-value">{{ stats.badges }}</div>
+            <div class="stat-value">{{ stats.badges|default(0) }}</div>
             <div class="stat-label">Badges obtenus</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon">⏱️</div>
-            <div class="stat-value">{{ stats.temps_jeu }}</div>
+            <div class="stat-value">{{ stats.temps_jeu|default("0h") }}</div>
             <div class="stat-label">Temps de jeu</div>
         </div>
 
@@ -511,29 +535,34 @@
     <div class="pokedex-resume">
 
         <div>
-            <strong>{{ pokedex.captures }} / {{ pokedex.total }}</strong>
+            <strong>
+                {{ pokedex.captures|default(0) }}
+                /
+                {{ pokedex.total|default(0) }}
+            </strong>
             <br>
             <span>Pokémon capturés</span>
         </div>
 
         <div>
-            <strong>{{ pokedex.pourcentage }} %</strong>
+            <strong>{{ pokedex.pourcentage|default(0) }} %</strong>
             <br>
             <span>Pokédex complété</span>
         </div>
 
         <div style="flex: 1 1 100%;">
             <div class="pokedex-bar">
-                <div class="pokedex-progress"
-                     style="width: {{ pokedex.pourcentage }}%;">
-                </div>
+                <div
+                    class="pokedex-progress"
+                    style="width: {{ [100, [0, pokedex.pourcentage|default(0)|float]|max]|min }}%;"
+                ></div>
             </div>
         </div>
 
     </div>
 
 
-    <!-- COLLECTION -->
+    <!-- COLLECTION POKÉMON -->
 
     {% if pokemons %}
 
@@ -544,33 +573,46 @@
         <div class="pokemon-card">
 
             <div class="pokemon-numero">
-                N° {{ "%03d"|format(pokemon.numero) }}
+                N° {{ "%03d"|format(pokemon.numero|int) }}
             </div>
 
             <img
                 src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ pokemon.numero }}.png"
-                alt="{{ pokemon.nom }}"
+                alt="{{ pokemon.nom|default('Pokémon') }}"
                 loading="lazy"
+                onerror="this.style.display='none'"
             >
 
             <div class="pokemon-nom">
-                {{ pokemon.nom }}
+                {{ pokemon.nom|default("Pokémon inconnu") }}
             </div>
 
             <div class="pokemon-types">
-                {% for type in pokemon.types %}
+
+                {% for type in pokemon.types|default([], true) %}
                     <span class="type">{{ type }}</span>
                 {% endfor %}
+
             </div>
 
-            {% if pokemon.capture %}
+            {% if pokemon.capture|default(false) %}
+
                 <span class="pokemon-statut capture">
                     ✓ Capturé
                 </span>
-            {% elif pokemon.decouvert %}
+
+            {% elif pokemon.decouvert|default(false) %}
+
                 <span class="pokemon-statut decouvert">
                     Découvert
                 </span>
+
+            {% else %}
+
+                <span class="pokemon-statut inconnu">
+                    Inconnu
+                </span>
+
             {% endif %}
 
         </div>
@@ -588,14 +630,13 @@
         <h3>Ton Pokédex est vide</h3>
 
         <p>
-            {% if not joueur.minecraft_lie %}
-                Connecte ton compte Minecraft pour commencer ta collection Pokémon.
-            {% else %}
-                Tu n'as pas encore découvert ou capturé de Pokémon.
-            {% endif %}
+            Tu n'as pas encore découvert ou capturé de Pokémon.
+            Ta collection apparaîtra ici.
         </p>
 
     </div>
+
+    {% endif %}
 
     {% endif %}
 
