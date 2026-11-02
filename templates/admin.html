@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}Administration - PokeOrigins{% endblock %}
@@ -59,6 +60,7 @@
     border: 1px solid #294665;
     border-radius: 14px;
     padding: 25px;
+    margin-bottom: 25px;
 }
 
 .admin-section h2 {
@@ -108,6 +110,64 @@
     color: #65df9a;
 }
 
+/* FORMULAIRE ANNONCES */
+
+.annonce-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.annonce-form label {
+    color: #aabbd0;
+    font-weight: bold;
+}
+
+.annonce-form input,
+.annonce-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #0d1929;
+    color: white;
+    border: 1px solid #42658a;
+    border-radius: 9px;
+    padding: 13px;
+    font-size: 15px;
+    outline: none;
+    font-family: inherit;
+}
+
+.annonce-form input:focus,
+.annonce-form textarea:focus {
+    border-color: #65baff;
+}
+
+.annonce-form textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.annonce-button {
+    background: #2585d8;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 13px 22px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.annonce-button:hover {
+    background: #409feF;
+}
+
+.annonce-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 @media(max-width: 600px) {
     .admin-page {
         padding: 12px;
@@ -151,6 +211,54 @@
 
         </div>
 
+        <!-- GESTION DES ANNONCES -->
+
+        <div class="admin-section">
+
+            <h2>📢 Publier une annonce</h2>
+
+            <p class="admin-message">
+                Publie une actualité qui apparaîtra sur la page Actualités de PokeOrigins.
+            </p>
+
+            <form id="annonceForm" class="annonce-form">
+
+                <div>
+                    <label for="annonceTitre">Titre de l'annonce</label>
+                    <input
+                        type="text"
+                        id="annonceTitre"
+                        placeholder="Exemple : Nouvelle mise à jour !"
+                        maxlength="150"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="annonceContenu">Contenu de l'annonce</label>
+                    <textarea
+                        id="annonceContenu"
+                        placeholder="Écris ici le contenu de ton annonce..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button
+                    type="submit"
+                    id="annonceButton"
+                    class="annonce-button"
+                >
+                    📢 Publier l'annonce
+                </button>
+
+                <p id="annonceMessage" class="admin-message"></p>
+
+            </form>
+
+        </div>
+
+        <!-- GESTION DES JOUEURS -->
+
         <div class="admin-section">
 
             <h2>👥 Gestion des joueurs</h2>
@@ -185,6 +293,10 @@
 </div>
 
 <script>
+
+let sessionUtilisateur = null;
+let roleUtilisateur = null;
+
 async function initialiserPanelAdmin() {
 
     const message = document.getElementById("adminMessage");
@@ -200,20 +312,26 @@ async function initialiserPanelAdmin() {
             return;
         }
 
-        const session = sessionData.session;
+        sessionUtilisateur = sessionData.session;
 
         const { data: monProfil, error: profilError } =
             await window.supabaseClient
                 .from("profiles")
                 .select("role")
-                .eq("id", session.user.id)
+                .eq("id", sessionUtilisateur.user.id)
                 .single();
 
-        if (profilError || !monProfil || monProfil.role !== "admin") {
+        if (
+            profilError ||
+            !monProfil ||
+            !["admin", "moderateur"].includes(monProfil.role)
+        ) {
             message.textContent = "Accès refusé : tu n'es pas administrateur.";
             message.classList.add("admin-error");
             return;
         }
+
+        roleUtilisateur = monProfil.role;
 
         const { data: joueurs, error: joueursError } =
             await window.supabaseClient
@@ -225,9 +343,10 @@ async function initialiserPanelAdmin() {
             throw joueursError;
         }
 
-        afficherJoueurs(joueurs || []);
+        afficherJoueurs(joueurs, roleUtilisateur);
 
         contenu.style.display = "block";
+
         message.textContent = "Bienvenue dans le panel administrateur.";
         message.classList.add("admin-success");
 
@@ -237,12 +356,80 @@ async function initialiserPanelAdmin() {
 
         message.textContent =
             "Impossible de charger les joueurs. Vérifie les autorisations Supabase.";
+
         message.classList.add("admin-error");
     }
 }
 
 
-function afficherJoueurs(joueurs) {
+// PUBLICATION DES ANNONCES
+
+document.getElementById("annonceForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const titre = document.getElementById("annonceTitre").value.trim();
+    const contenu = document.getElementById("annonceContenu").value.trim();
+
+    const bouton = document.getElementById("annonceButton");
+    const message = document.getElementById("annonceMessage");
+
+    if (!titre || !contenu) {
+        message.textContent = "Remplis tous les champs.";
+        message.className = "admin-message admin-error";
+        return;
+    }
+
+    if (!sessionUtilisateur) {
+        message.textContent = "Session introuvable. Reconnecte-toi.";
+        message.className = "admin-message admin-error";
+        return;
+    }
+
+    bouton.disabled = true;
+    bouton.textContent = "Publication en cours...";
+
+    try {
+
+        const { error } = await window.supabaseClient
+            .from("annonces")
+            .insert({
+                titre: titre,
+                contenu: contenu,
+                created_by: sessionUtilisateur.user.id
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        message.textContent = "✅ Ton annonce a été publiée avec succès !";
+        message.className = "admin-message admin-success";
+
+        document.getElementById("annonceForm").reset();
+
+    } catch (erreur) {
+
+        console.error("Erreur publication annonce :", erreur);
+
+        message.textContent =
+            "Impossible de publier l'annonce. Vérifie les permissions Supabase.";
+
+        message.className = "admin-message admin-error";
+
+    } finally {
+
+        bouton.disabled = false;
+        bouton.textContent = "📢 Publier l'annonce";
+
+    }
+
+});
+
+
+// AFFICHAGE DES JOUEURS
+
+function afficherJoueurs(joueurs, monRole) {
 
     const liste = document.getElementById("listeJoueurs");
 
@@ -276,80 +463,97 @@ function afficherJoueurs(joueurs) {
 
         const celluleRole = cellule("");
 
-        const select = document.createElement("select");
+        // SEUL L'ADMINISTRATEUR PEUT MODIFIER LES ROLES
 
-        [
-            { value: "joueur", label: "Joueur" },
-            { value: "moderateur", label: "Modérateur" },
-            { value: "admin", label: "Administrateur" }
-        ].forEach(optionData => {
+        if (monRole === "admin") {
 
-            const option = document.createElement("option");
-            option.value = optionData.value;
-            option.textContent = optionData.label;
+            const select = document.createElement("select");
 
-            if (joueur.role === optionData.value) {
-                option.selected = true;
-            }
+            [
+                { value: "joueur", label: "Joueur" },
+                { value: "moderateur", label: "Modérateur" },
+                { value: "admin", label: "Administrateur" }
+            ].forEach(optionData => {
 
-            select.appendChild(option);
-        });
+                const option = document.createElement("option");
+                option.value = optionData.value;
+                option.textContent = optionData.label;
 
-        select.addEventListener("change", async () => {
-
-            const nouveauRole = select.value;
-
-            if (!confirm(
-                "Modifier la permission de " +
-                (joueur.username || "ce joueur") +
-                " ?"
-            )) {
-                select.value = joueur.role;
-                return;
-            }
-
-            select.disabled = true;
-
-            const { error } = await window.supabaseClient.rpc(
-                "admin_modifier_role",
-                {
-                    cible: joueur.id,
-                    nouveau_role: nouveauRole
+                if (joueur.role === optionData.value) {
+                    option.selected = true;
                 }
-            );
 
-            if (error) {
+                select.appendChild(option);
+            });
 
-                alert("Impossible de modifier cette permission.");
+            select.addEventListener("change", async () => {
 
-                console.error(error);
+                const nouveauRole = select.value;
 
-                select.value = joueur.role;
+                if (!confirm(
+                    "Modifier la permission de " +
+                    (joueur.username || "ce joueur") +
+                    " ?"
+                )) {
+                    select.value = joueur.role;
+                    return;
+                }
 
-            } else {
+                select.disabled = true;
 
-                joueur.role = nouveauRole;
+                const { error } = await window.supabaseClient.rpc(
+                    "admin_modifier_role",
+                    {
+                        cible: joueur.id,
+                        nouveau_role: nouveauRole
+                    }
+                );
 
-                afficherJoueurs(joueurs);
+                if (error) {
 
-                document.getElementById("adminMessage").textContent =
-                    "Permission mise à jour avec succès.";
+                    alert("Impossible de modifier cette permission.");
 
-            }
+                    console.error(error);
 
-            select.disabled = false;
-        });
+                    select.value = joueur.role;
 
-        celluleRole.appendChild(select);
+                } else {
+
+                    joueur.role = nouveauRole;
+
+                    afficherJoueurs(joueurs, monRole);
+
+                    document.getElementById("adminMessage").textContent =
+                        "Permission mise à jour avec succès.";
+
+                }
+
+                select.disabled = false;
+            });
+
+            celluleRole.appendChild(select);
+
+        } else {
+
+            const roles = {
+                joueur: "Joueur",
+                moderateur: "Modérateur",
+                admin: "Administrateur"
+            };
+
+            celluleRole.textContent = roles[joueur.role] || "Joueur";
+        }
 
         liste.appendChild(ligne);
 
     });
 }
 
+
 document.addEventListener("DOMContentLoaded", function() {
     initialiserPanelAdmin();
 });
+
 </script>
 
 {% endblock %}
