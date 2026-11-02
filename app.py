@@ -21,15 +21,37 @@ def presentation():
 
 
 # ==============================
-# ESPACE JOUEUR
+# JOUEUR
 # ==============================
 
 @app.route("/joueur")
 def joueur():
+
+    informations_joueur = {
+        "pseudo": "Aventurier",
+        "minecraft_lie": False,
+        "pseudo_minecraft": "Non connecté",
+        "niveau": 12,
+        "xp": 750,
+        "xp_suivant": 1000,
+        "progression_xp": 75
+    }
+
+    statistiques = {
+        "captures": 24,
+        "decouverts": 56,
+        "combats": 38,
+        "victoires": 29,
+        "champions": 2,
+        "argent": 12500,
+        "badges": 2,
+        "temps_jeu": "12h 35min"
+    }
+
     return render_template(
         "joueur.html",
-        joueur=None,
-        stats=None
+        joueur=informations_joueur,
+        stats=statistiques
     )
 
 
@@ -39,11 +61,71 @@ def joueur():
 
 @app.route("/pokedex")
 def pokedex_joueur():
+
+    pokemons = [
+        {
+            "numero": 1,
+            "nom": "Bulbizarre",
+            "decouvert": True,
+            "capture": True,
+            "image": "",
+            "types": ["Plante", "Poison"]
+        },
+        {
+            "numero": 4,
+            "nom": "Salamèche",
+            "decouvert": True,
+            "capture": True,
+            "image": "",
+            "types": ["Feu"]
+        },
+        {
+            "numero": 7,
+            "nom": "Carapuce",
+            "decouvert": True,
+            "capture": False,
+            "image": "",
+            "types": ["Eau"]
+        },
+        {
+            "numero": 25,
+            "nom": "Pikachu",
+            "decouvert": True,
+            "capture": False,
+            "image": "",
+            "types": ["Électrik"]
+        },
+        {
+            "numero": 6,
+            "nom": "Dracaufeu",
+            "decouvert": False,
+            "capture": False,
+            "image": "",
+            "types": ["Feu", "Vol"]
+        }
+    ]
+
+    total_pokemons = 151
+    captures = sum(1 for p in pokemons if p["capture"])
+
+    pokedex = {
+        "captures": captures,
+        "total": total_pokemons,
+        "pourcentage": round(captures / total_pokemons * 100, 1)
+    }
+
+    types_pokemon = [
+        "Normal", "Feu", "Eau", "Plante", "Électrik",
+        "Glace", "Combat", "Poison", "Sol", "Vol",
+        "Psy", "Insecte", "Roche", "Spectre",
+        "Dragon", "Ténèbres", "Acier", "Fée"
+    ]
+
     return render_template(
         "pokedex_joueur.html",
-        pokedex=None,
-        pokemons=[],
-        types_pokemon=[],
+        pokedex=pokedex,
+        pokemons=pokemons,
+        types_pokemon=types_pokemon,
         minecraft_lie=False
     )
 
