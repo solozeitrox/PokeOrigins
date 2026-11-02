@@ -769,15 +769,6 @@ def wiki_economie():
 def wiki_reglement():
     return render_template("reglement.html")
 
-@app.route("/quetes")
-def quetes():
-    progression, quetes_quotidiennes, quetes_hebdomadaires = obtenir_resume_quetes()
-    return render_template(
-        "quetes.html",
-        progression=progression,
-        quetes_quotidiennes=quetes_quotidiennes,
-        quetes_hebdomadaires=quetes_hebdomadaires
-    )
 
 
 # ==========================================
