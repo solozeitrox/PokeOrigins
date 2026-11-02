@@ -193,7 +193,7 @@ async function initialiserPanelAdmin() {
     try {
 
         const { data: sessionData, error: sessionError } =
-            await supabaseClient.auth.getSession();
+            await window.supabaseClient.auth.getSession();
 
         if (sessionError || !sessionData.session) {
             message.textContent = "Tu dois être connecté pour accéder à cette page.";
@@ -203,7 +203,7 @@ async function initialiserPanelAdmin() {
         const session = sessionData.session;
 
         const { data: monProfil, error: profilError } =
-            await supabaseClient
+            await window.supabaseClient
                 .from("profiles")
                 .select("role")
                 .eq("id", session.user.id)
@@ -216,7 +216,7 @@ async function initialiserPanelAdmin() {
         }
 
         const { data: joueurs, error: joueursError } =
-            await supabaseClient
+            await window.supabaseClient
                 .from("profiles")
                 .select("id, username, minecraft_username, minecraft_verified, role")
                 .order("created_at", { ascending: false });
@@ -310,7 +310,7 @@ function afficherJoueurs(joueurs) {
 
             select.disabled = true;
 
-            const { error } = await supabaseClient.rpc(
+            const { error } = await window.supabaseClient.rpc(
                 "admin_modifier_role",
                 {
                     cible: joueur.id,
