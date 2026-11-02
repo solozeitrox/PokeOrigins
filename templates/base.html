@@ -48,9 +48,7 @@
             background-attachment: fixed;
         }
 
-        /* =====================================
-           HEADER
-        ===================================== */
+        /* HEADER */
 
         .site-header {
             height: 85px;
@@ -90,9 +88,7 @@
             background: rgba(0, 145, 255, 0.4);
         }
 
-        /* =====================================
-           COMPTE GOOGLE
-        ===================================== */
+        /* COMPTE */
 
         .account-area {
             position: absolute;
@@ -150,9 +146,7 @@
             background: rgba(220, 40, 40, 0.4);
         }
 
-        /* =====================================
-           MENU LATÉRAL
-        ===================================== */
+        /* MENU LATÉRAL */
 
         .menu-overlay {
             position: fixed;
@@ -223,18 +217,14 @@
             border-color: #45eaff;
         }
 
-        /* =====================================
-           CONTENU
-        ===================================== */
+        /* CONTENU */
 
         .page-content {
             flex: 1 0 auto;
             width: 100%;
         }
 
-        /* =====================================
-           PIED DE PAGE
-        ===================================== */
+        /* PIED DE PAGE */
 
         .site-footer {
             width: 100%;
@@ -253,9 +243,7 @@
             font-weight: bold;
         }
 
-        /* =====================================
-           RESPONSIVE
-        ===================================== */
+        /* RESPONSIVE */
 
         @media (max-width: 600px) {
 
@@ -298,10 +286,6 @@
 
 <body class="{% if request.path.startswith('/wiki') %}fond-wiki{% endif %}">
 
-    <!-- =====================================
-         HEADER
-    ===================================== -->
-
     <header class="site-header">
 
         <button
@@ -313,8 +297,6 @@
         >☰</button>
 
         <a href="/" class="site-logo">⚡ PokeOrigins</a>
-
-        <!-- COMPTE GOOGLE -->
 
         <div class="account-area">
 
@@ -352,9 +334,7 @@
 
     </header>
 
-    <!-- =====================================
-         MENU
-    ===================================== -->
+    <!-- MENU -->
 
     <div
         class="menu-overlay"
@@ -382,39 +362,35 @@
         <a href="/classements">🏆 Classements</a>
         <a href="/discord">💬 Discord</a>
 
+        <a href="/admin" id="adminMenuLink" style="display:none;">
+            🛡️ Administration
+        </a>
+
+        <a href="/gestion-annonces" id="annoncesMenuLink" style="display:none;">
+            📢 Annonces
+        </a>
+
     </nav>
 
-    <!-- =====================================
-         CONTENU DES PAGES
-    ===================================== -->
+    <!-- CONTENU -->
 
     <main class="page-content">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- =====================================
-         COPYRIGHT
-    ===================================== -->
+    <!-- COPYRIGHT -->
 
     <footer class="site-footer">
         © 2026 <span>PokeOrigins</span> — Tous droits réservés.
     </footer>
 
-    <!-- =====================================
-         BIBLIOTHÈQUE SUPABASE
-    ===================================== -->
+    <!-- SUPABASE -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- =====================================
-         JAVASCRIPT
-    ===================================== -->
-
     <script>
 
-        // =====================================
         // MENU
-        // =====================================
 
         function toggleMenu() {
 
@@ -443,18 +419,15 @@
         }
 
 
-        // =====================================
         // CONFIGURATION SUPABASE
-        // =====================================
 
         window.supabaseClient = window.supabase.createClient(
-        {{ supabase_url | tojson }},
-        {{ supabase_key | tojson }}
+            {{ supabase_url | tojson }},
+            {{ supabase_key | tojson }}
         );
 
-        // =====================================
+
         // AFFICHAGE DU COMPTE
-        // =====================================
 
         function afficherCompte(utilisateur) {
 
@@ -486,15 +459,74 @@
         }
 
 
-        // =====================================
+        // AFFICHAGE DES ONGLETS ADMIN ET ANNONCES
+
+        async function verifierRoleStaff(utilisateur) {
+
+            const lienAdmin =
+                document.getElementById("adminMenuLink");
+
+            const lienAnnonces =
+                document.getElementById("annoncesMenuLink");
+
+            // Toujours cacher les liens avant la vérification
+
+            lienAdmin.style.display = "none";
+            lienAnnonces.style.display = "none";
+
+            if (!utilisateur) {
+                return;
+            }
+
+            try {
+
+                const { data: profil, error } =
+                    await window.supabaseClient
+                        .from("profiles")
+                        .select("role")
+                        .eq("id", utilisateur.id)
+                        .single();
+
+                if (error || !profil) {
+
+                    console.error(
+                        "Impossible de vérifier le rôle :",
+                        error
+                    );
+
+                    return;
+                }
+
+                const estStaff =
+                    ["admin", "moderateur"].includes(profil.role);
+
+                if (estStaff) {
+
+                    lienAdmin.style.display = "block";
+                    lienAnnonces.style.display = "block";
+
+                }
+
+            } catch (erreur) {
+
+                console.error(
+                    "Erreur lors de la vérification du rôle :",
+                    erreur
+                );
+
+            }
+        }
+
+
         // SYNCHRONISATION AVEC FLASK
-        // =====================================
 
         async function actualiserCompte(session) {
 
             if (!session) {
 
                 afficherCompte(null);
+
+                await verifierRoleStaff(null);
 
                 await fetch("/auth/logout", {
                     method: "POST"
@@ -521,6 +553,8 @@
 
                 afficherCompte(null);
 
+                await verifierRoleStaff(null);
+
                 console.error(
                     "Impossible de synchroniser le compte."
                 );
@@ -529,12 +563,12 @@
             }
 
             afficherCompte(session.user);
+
+            await verifierRoleStaff(session.user);
         }
 
 
-        // =====================================
         // CONNEXION GOOGLE
-        // =====================================
 
         async function connexionGoogle() {
 
@@ -570,9 +604,7 @@
         }
 
 
-        // =====================================
         // DÉCONNEXION
-        // =====================================
 
         async function deconnexionGoogle() {
 
@@ -596,13 +628,13 @@
 
             afficherCompte(null);
 
+            await verifierRoleStaff(null);
+
             window.location.href = "/";
         }
 
 
-        // =====================================
         // INITIALISATION DU COMPTE
-        // =====================================
 
         async function initialiserCompte() {
 
@@ -612,7 +644,10 @@
             if (error) {
 
                 console.error(error);
+
                 afficherCompte(null);
+
+                await verifierRoleStaff(null);
 
                 return;
             }
@@ -621,9 +656,7 @@
         }
 
 
-        // =====================================
         // ÉCOUTE DES CHANGEMENTS DE CONNEXION
-        // =====================================
 
         window.supabaseClient.auth.onAuthStateChange(
             (event, session) => {
@@ -644,16 +677,12 @@
         );
 
 
-        // =====================================
         // LANCEMENT
-        // =====================================
 
         initialiserCompte();
 
 
-        // =====================================
         // FERMETURE AVEC ÉCHAP
-        // =====================================
 
         document.addEventListener("keydown", function(event) {
 
