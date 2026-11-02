@@ -1,131 +1,480 @@
-```html
+
 {% extends "base.html" %}
 
-{% block title %}Arènes - PokeOrigins{% endblock %}
+{% block title %}Les 8 Arènes - PokeOrigins{% endblock %}
 
 {% block content %}
 
 <style>
 .arenes-page {
-    max-width: 1100px;
+    max-width: 1150px;
     margin: 40px auto;
     padding: 20px;
     color: white;
 }
 
+/* HEADER */
+
 .arenes-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 }
 
 .arenes-header h1 {
     color: #f5c542;
     font-size: 40px;
+    margin-bottom: 12px;
 }
 
 .arenes-header p {
-    color: #ccc;
+    color: #bdc9d9;
 }
 
+/* PROGRESSION */
+
+.arenes-progression {
+    background: linear-gradient(135deg, rgba(24, 42, 69, .97), rgba(15, 25, 45, .97));
+    border: 1px solid rgba(245, 197, 66, .35);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 25px;
+}
+
+.progression-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.progression-top h2 {
+    color: #f5c542;
+    font-size: 20px;
+}
+
+.progression-top span {
+    color: white;
+    font-weight: bold;
+}
+
+.progression-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255,255,255,.12);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progression-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e6ae32, #ffe17b);
+    border-radius: 20px;
+    transition: width .4s ease;
+}
+
+/* INFORMATIONS */
+
 .arenes-info {
-    background: rgba(245, 197, 66, 0.1);
-    border: 1px solid rgba(245, 197, 66, 0.4);
+    background: rgba(245, 197, 66, .08);
+    border: 1px solid rgba(245, 197, 66, .3);
     border-radius: 12px;
     padding: 18px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     color: #f5c542;
+    text-align: center;
 }
+
+/* GRID */
 
 .arenes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
 }
 
+/* CARTE */
+
 .arene-card {
-    background: rgba(25, 35, 55, 0.95);
-    border: 1px solid rgba(245, 197, 66, 0.3);
-    border-radius: 15px;
-    padding: 24px;
+    --arene-color: #f5c542;
+
+    position: relative;
+    background: linear-gradient(160deg, rgba(29, 43, 66, .98), rgba(13, 23, 42, .98));
+    border: 1px solid color-mix(in srgb, var(--arene-color) 45%, transparent);
+    border-radius: 17px;
+    padding: 23px;
     text-align: center;
-    transition: 0.2s;
+    overflow: hidden;
+    transition: .25s;
 }
 
 .arene-card:hover {
     transform: translateY(-5px);
-    border-color: #f5c542;
+    border-color: var(--arene-color);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--arene-color) 15%, transparent);
+}
+
+.arene-card.verrouillee {
+    opacity: .65;
+}
+
+.arene-number {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    color: rgba(255,255,255,.35);
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .arene-icon {
-    font-size: 45px;
-    margin-bottom: 12px;
+    width: 75px;
+    height: 75px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px auto 15px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--arene-color) 15%, transparent);
+    border: 2px solid var(--arene-color);
+    font-size: 38px;
 }
 
 .arene-card h2 {
-    color: #f5c542;
-    margin: 5px 0 12px;
+    color: var(--arene-color);
+    font-size: 23px;
+    margin-bottom: 12px;
 }
 
-.arene-card p {
-    color: #ccc;
-    line-height: 1.6;
+.arene-type {
+    display: inline-block;
+    color: var(--arene-color);
+    background: color-mix(in srgb, var(--arene-color) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--arene-color) 40%, transparent);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 17px;
 }
+
+.arene-details {
+    text-align: left;
+    background: rgba(0,0,0,.18);
+    border-radius: 10px;
+    padding: 13px;
+    margin-bottom: 15px;
+}
+
+.arene-details p {
+    color: #d0d9e8;
+    font-size: 13px;
+    margin: 7px 0;
+}
+
+.arene-description {
+    color: #aebbd0;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 60px;
+    margin-bottom: 15px;
+}
+
+/* EQUIPE */
+
+.arene-equipe-title {
+    color: var(--arene-color);
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.arene-equipe {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+    margin-bottom: 18px;
+}
+
+.pokemon-slot {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 7px;
+    padding: 10px 0;
+    color: #b8c4d5;
+    font-size: 17px;
+}
+
+.pokemon-slot small {
+    display: block;
+    font-size: 9px;
+    margin-top: 3px;
+}
+
+/* BADGE */
+
+.arene-badge {
+    padding: 11px;
+    border-radius: 9px;
+    background: rgba(245,197,66,.08);
+    border: 1px solid rgba(245,197,66,.25);
+    color: #f5c542;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+/* STATUT */
 
 .arene-status {
     display: inline-block;
-    background: rgba(245, 197, 66, 0.15);
-    color: #f5c542;
-    padding: 6px 12px;
+    padding: 7px 13px;
     border-radius: 20px;
-    font-size: 12px;
-    margin-top: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    background: rgba(255,255,255,.08);
+    color: #d0d9e8;
+}
+
+.arene-status.terminee {
+    background: rgba(65, 190, 120, .15);
+    color: #62e69a;
+}
+
+.arene-status.disponible {
+    background: rgba(245, 197, 66, .15);
+    color: #f5c542;
+}
+
+.arene-status.verrouillee {
+    background: rgba(150,150,150,.12);
+    color: #aebbd0;
+}
+
+/* OBJECTIF FINAL */
+
+.arenes-final {
+    text-align: center;
+    margin-top: 35px;
+    padding: 25px;
+    border-radius: 15px;
+    background: rgba(245,197,66,.07);
+    border: 1px solid rgba(245,197,66,.25);
+}
+
+.arenes-final h2 {
+    color: #f5c542;
+    margin-bottom: 10px;
+}
+
+.arenes-final p {
+    color: #bdc9d9;
+    line-height: 1.6;
+}
+
+/* MOBILE */
+
+@media(max-width: 600px) {
+    .arenes-page {
+        padding: 12px;
+    }
+
+    .arenes-header h1 {
+        font-size: 30px;
+    }
+
+    .arenes-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
 <div class="arenes-page">
 
+    <!-- HEADER -->
+
     <div class="arenes-header">
-        <h1>🏟️ Les Arènes</h1>
-        <p>Prépare ton équipe Pokémon et relève les défis des arènes de PokeOrigins !</p>
+        <h1>🏟️ Les 8 Arènes</h1>
+        <p>
+            Affronte les huit champions de PokeOrigins,
+            remporte leurs badges et deviens un maître Pokémon !
+        </p>
     </div>
 
-    <div class="arenes-info">
-        ⚔️ Découvre ici les différentes arènes, leurs champions et les récompenses à gagner.
+    <!-- PROGRESSION -->
+
+    <div class="arenes-progression">
+
+        <div class="progression-top">
+            <h2>🏆 Progression des arènes</h2>
+
+            <span>
+                {{ progression_arenes.badges_obtenus }}
+                / {{ progression_arenes.total_badges }} badges
+            </span>
+        </div>
+
+        <div class="progression-bar">
+            <div class="progression-fill"
+                 style="width: {{ progression_arenes.pourcentage }}%;">
+            </div>
+        </div>
+
+        <p style="color:#bdc9d9; font-size:12px; margin-top:10px;">
+            {{ progression_arenes.pourcentage }} % du parcours terminé
+        </p>
+
     </div>
+
+    <!-- INFORMATIONS -->
+
+    <div class="arenes-info">
+        ⚔️ Chaque champion possède une équipe de 6 Pokémon.
+        Prépare ton équipe avant chaque affrontement !
+    </div>
+
+    <!-- LES 8 ARENES -->
 
     <div class="arenes-grid">
 
-        <div class="arene-card">
-            <div class="arene-icon">🔥</div>
-            <h2>Arène Feu</h2>
-            <p><strong>Champion :</strong> À définir</p>
-            <p><strong>Type :</strong> Feu</p>
-            <span class="arene-status">Informations à venir</span>
+        {% for arene in arenes %}
+
+        <div class="arene-card
+            {% if not arene.debloquee %}verrouillee{% endif %}"
+            style="--arene-color: {{ arene.couleur }};">
+
+            <span class="arene-number">
+                ARÈNE N°{{ arene.id }}
+            </span>
+
+            <div class="arene-icon">
+
+                {% if arene.type == "Plante" %}
+                    🌿
+                {% elif arene.type == "Eau" %}
+                    💧
+                {% elif arene.type == "Électrik" %}
+                    ⚡
+                {% elif arene.type == "Feu" %}
+                    🔥
+                {% elif arene.type == "Spectre" %}
+                    👻
+                {% elif arene.type == "Glace" %}
+                    ❄️
+                {% elif arene.type == "Psy" %}
+                    🔮
+                {% elif arene.type == "Dragon" %}
+                    🐉
+                {% endif %}
+
+            </div>
+
+            <h2>{{ arene.nom }}</h2>
+
+            <span class="arene-type">
+                TYPE {{ arene.type | upper }}
+            </span>
+
+            <div class="arene-details">
+
+                <p>
+                    👑 <strong>Champion :</strong>
+                    {{ arene.champion }}
+                </p>
+
+                <p>
+                    📊 <strong>Niveau :</strong>
+                    {{ arene.niveau }}
+                </p>
+
+                <p>
+                    🏛️ <strong>Gymnase :</strong>
+                    {{ arene.theme }}
+                </p>
+
+            </div>
+
+            <p class="arene-description">
+                {{ arene.description }}
+            </p>
+
+            <div class="arene-equipe-title">
+                ⚔️ ÉQUIPE DU CHAMPION
+            </div>
+
+            <div class="arene-equipe">
+
+                {% for pokemon in arene.equipe %}
+
+                <div class="pokemon-slot">
+                    {% if pokemon == "À définir" %}
+                        ?
+                        <small>Pokémon</small>
+                    {% else %}
+                        🐾
+                        <small>{{ pokemon }}</small>
+                    {% endif %}
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="arene-badge">
+                🏅 {{ arene.badge }}
+            </div>
+
+            {% if arene.terminee %}
+
+                <span class="arene-status terminee">
+                    ✓ ARÈNE TERMINÉE
+                </span>
+
+            {% elif arene.debloquee %}
+
+                <span class="arene-status disponible">
+                    ⚔️ ARÈNE DISPONIBLE
+                </span>
+
+            {% else %}
+
+                <span class="arene-status verrouillee">
+                    🔒 ARÈNE VERROUILLÉE
+                </span>
+
+            {% endif %}
+
         </div>
 
-        <div class="arene-card">
-            <div class="arene-icon">💧</div>
-            <h2>Arène Eau</h2>
-            <p><strong>Champion :</strong> À définir</p>
-            <p><strong>Type :</strong> Eau</p>
-            <span class="arene-status">Informations à venir</span>
-        </div>
+        {% endfor %}
 
-        <div class="arene-card">
-            <div class="arene-icon">🌿</div>
-            <h2>Arène Plante</h2>
-            <p><strong>Champion :</strong> À définir</p>
-            <p><strong>Type :</strong> Plante</p>
-            <span class="arene-status">Informations à venir</span>
-        </div>
+    </div>
 
-        <div class="arene-card">
-            <div class="arene-icon">⚡</div>
-            <h2>Arène Électrik</h2>
-            <p><strong>Champion :</strong> À définir</p>
-            <p><strong>Type :</strong> Électrik</p>
-            <span class="arene-status">Informations à venir</span>
-        </div>
+    <!-- OBJECTIF FINAL -->
+
+    <div class="arenes-final">
+
+        {% if progression_arenes.terminee %}
+
+            <h2>🏆 Félicitations !</h2>
+
+            <p>
+                Tu as remporté les 8 badges de PokeOrigins !
+                Tu as terminé le parcours des arènes.
+            </p>
+
+        {% else %}
+
+            <h2>👑 Objectif final</h2>
+
+            <p>
+                Obtiens les 8 badges en affrontant les champions
+                des différents gymnases de PokeOrigins.
+                Seuls les meilleurs dresseurs réussiront ce défi !
+            </p>
+
+        {% endif %}
 
     </div>
 
