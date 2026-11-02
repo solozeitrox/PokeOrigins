@@ -119,6 +119,7 @@ def pokedex_joueur():
     ]
 
     total_pokemons = 1025
+    
     captures = sum(1 for p in pokemons if p["capture"])
 
     pokedex = {
