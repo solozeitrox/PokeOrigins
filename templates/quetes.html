@@ -1,0 +1,446 @@
+
+{% extends "base.html" %}
+
+{% block title %}Quêtes - PokeOrigins{% endblock %}
+
+{% block content %}
+
+<style>
+/* PAGE PRINCIPALE */
+.quetes-page {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    color: #f2f7ff;
+}
+
+/* EN-TÊTE */
+.quetes-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.quetes-header h1 {
+    font-size: 38px;
+    color: #65c9ff;
+    text-shadow: 0 0 15px rgba(50, 170, 255, 0.4);
+    margin-bottom: 10px;
+}
+
+.quetes-header p {
+    color: #aebfd5;
+    font-size: 15px;
+}
+
+/* STATISTIQUES */
+.quetes-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: linear-gradient(145deg, #142b47, #0b1729);
+    border: 1px solid rgba(90, 180, 255, 0.25);
+    border-radius: 15px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.stat-card .stat-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.stat-card h3 {
+    color: #a9c5e5;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.stat-card strong {
+    font-size: 25px;
+    color: #65c9ff;
+}
+
+/* SECTIONS */
+.quetes-section {
+    margin-bottom: 45px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(100, 180, 255, 0.25);
+}
+
+.section-title h2 {
+    color: #70caff;
+    font-size: 25px;
+}
+
+.section-title span {
+    color: #9db3ce;
+    font-size: 13px;
+}
+
+/* GRILLE DES QUÊTES */
+.quetes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+/* CARTE */
+.quete-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, #172f4d, #0c1a2c);
+    border: 1px solid rgba(100, 180, 255, 0.22);
+    border-radius: 16px;
+    padding: 22px;
+    transition: 0.25s;
+}
+
+.quete-card:hover {
+    transform: translateY(-4px);
+    border-color: #55baff;
+    box-shadow: 0 8px 25px rgba(35, 145, 255, 0.15);
+}
+
+.quete-card.terminee {
+    border-color: rgba(65, 220, 150, 0.5);
+}
+
+.quete-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.quete-icon {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(70, 160, 255, 0.13);
+    border: 1px solid rgba(90, 180, 255, 0.3);
+    border-radius: 13px;
+    font-size: 25px;
+}
+
+.quete-infos {
+    flex: 1;
+}
+
+.quete-infos h3 {
+    font-size: 17px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.quete-infos p {
+    color: #9eb5d0;
+    font-size: 13px;
+}
+
+.quete-recompense {
+    color: #ffd45c;
+    font-weight: bold;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/* PROGRESSION */
+.progression-texte {
+    display: flex;
+    justify-content: space-between;
+    color: #a9bfd9;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.progression-barre {
+    width: 100%;
+    height: 9px;
+    background: #091525;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(120, 180, 255, 0.12);
+}
+
+.progression-remplissage {
+    height: 100%;
+    background: linear-gradient(90deg, #2588e8, #64d1ff);
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+.quete-card.terminee .progression-remplissage {
+    background: linear-gradient(90deg, #20b879, #65efaa);
+}
+
+/* STATUT */
+.quete-statut {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    background: rgba(80, 160, 255, 0.12);
+    color: #70caff;
+}
+
+.quete-card.terminee .quete-statut {
+    background: rgba(50, 210, 135, 0.13);
+    color: #63e9a5;
+}
+
+/* BLOC INFORMATIONS */
+.quetes-info {
+    margin-top: 30px;
+    padding: 22px;
+    border-radius: 15px;
+    background: linear-gradient(120deg, #142c49, #101e32);
+    border: 1px solid rgba(80, 170, 255, 0.2);
+    text-align: center;
+}
+
+.quetes-info h3 {
+    color: #70caff;
+    margin-bottom: 8px;
+}
+
+.quetes-info p {
+    color: #a9bdd5;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 750px) {
+    .quetes-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quetes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .quetes-header h1 {
+        font-size: 29px;
+    }
+}
+</style>
+
+<div class="quetes-page">
+
+    <!-- EN-TÊTE -->
+    <div class="quetes-header">
+        <h1>📜 Tableau des quêtes</h1>
+        <p>Accomplis des missions, gagne de l'expérience et progresse dans PokeOrigins.</p>
+    </div>
+
+    <!-- STATISTIQUES -->
+    <div class="quetes-stats">
+
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <h3>XP gagnée grâce aux quêtes</h3>
+            <strong>{{ progression.xp_total|default(0) }}</strong>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <h3>Quêtes quotidiennes terminées</h3>
+            <strong>{{ progression.quotidiennes_terminees|default(0) }}/3</strong>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <h3>Quêtes hebdomadaires terminées</h3>
+            <strong>{{ progression.hebdomadaires_terminees|default(0) }}/5</strong>
+        </div>
+
+    </div>
+
+    <!-- QUÊTES QUOTIDIENNES -->
+    <section class="quetes-section">
+
+        <div class="section-title">
+            <h2>☀️ Quêtes quotidiennes</h2>
+            <span>Renouvellement chaque jour à minuit</span>
+        </div>
+
+        <div class="quetes-grid">
+
+            {% for quete in quetes_quotidiennes %}
+
+            <div class="quete-card {% if quete.terminee %}terminee{% endif %}">
+
+                <div class="quete-top">
+
+                    <div class="quete-icon">
+                        {% if 'capture' in quete.id %}
+                            ⚾
+                        {% elif 'combat' in quete.id %}
+                            ⚔️
+                        {% elif 'exploration' in quete.id %}
+                            🧭
+                        {% else %}
+                            ⭐
+                        {% endif %}
+                    </div>
+
+                    <div class="quete-infos">
+                        <h3>{{ quete.nom }}</h3>
+                        <p>{{ quete.description }}</p>
+                    </div>
+
+                    <div class="quete-recompense">
+                        +{{ quete.xp }} XP
+                    </div>
+
+                </div>
+
+                <div class="progression-texte">
+                    <span>Progression</span>
+                    <span>{{ quete.progression }}/{{ quete.objectif }}</span>
+                </div>
+
+                <div class="progression-barre">
+                    <div class="progression-remplissage"
+                         style="width: {{ quete.pourcentage }}%;">
+                    </div>
+                </div>
+
+                <div class="quete-statut">
+                    {% if quete.terminee %}
+                        ✓ Quête terminée
+                    {% else %}
+                        En cours
+                    {% endif %}
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <p>Aucune quête quotidienne disponible pour le moment.</p>
+
+            {% endfor %}
+
+        </div>
+    </section>
+
+    <!-- QUÊTES HEBDOMADAIRES -->
+    <section class="quetes-section">
+
+        <div class="section-title">
+            <h2>🏆 Quêtes hebdomadaires</h2>
+            <span>Renouvellement chaque lundi à minuit</span>
+        </div>
+
+        <div class="quetes-grid">
+
+            {% for quete in quetes_hebdomadaires %}
+
+            <div class="quete-card {% if quete.terminee %}terminee{% endif %}">
+
+                <div class="quete-top">
+
+                    <div class="quete-icon">
+                        {% if 'capture' in quete.id %}
+                            ⚾
+                        {% elif 'combat' in quete.id %}
+                            ⚔️
+                        {% elif 'raid' in quete.id %}
+                            🐉
+                        {% elif 'trainer' in quete.id %}
+                            🥊
+                        {% elif 'biome' in quete.id %}
+                            🌳
+                        {% elif 'evolution' in quete.id %}
+                            ✨
+                        {% elif 'trade' in quete.id %}
+                            🔄
+                        {% elif 'blocks' in quete.id %}
+                            🗺️
+                        {% else %}
+                            ⭐
+                        {% endif %}
+                    </div>
+
+                    <div class="quete-infos">
+                        <h3>{{ quete.nom }}</h3>
+                        <p>{{ quete.description }}</p>
+                    </div>
+
+                    <div class="quete-recompense">
+                        +{{ quete.xp }} XP
+                    </div>
+
+                </div>
+
+                <div class="progression-texte">
+                    <span>Progression</span>
+                    <span>{{ quete.progression }}/{{ quete.objectif }}</span>
+                </div>
+
+                <div class="progression-barre">
+                    <div class="progression-remplissage"
+                         style="width: {{ quete.pourcentage }}%;">
+                    </div>
+                </div>
+
+                <div class="quete-statut">
+                    {% if quete.terminee %}
+                        ✓ Quête terminée
+                    {% else %}
+                        En cours
+                    {% endif %}
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <p>Aucune quête hebdomadaire disponible pour le moment.</p>
+
+            {% endfor %}
+
+        </div>
+    </section>
+
+    <!-- INFORMATIONS -->
+    <div class="quetes-info">
+        <h3>💡 Comment fonctionne le système de quêtes ?</h3>
+        <p>
+            Accomplis des objectifs pendant tes aventures sur PokeOrigins
+            pour gagner de l'expérience.
+            <br>
+            Les quêtes quotidiennes rapportent jusqu'à 100 XP par jour.
+            Les quêtes hebdomadaires peuvent rapporter jusqu'à 600 XP par semaine.
+            <br>
+            Toute l'expérience gagnée contribue également à ta progression dans le Battle Pass.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

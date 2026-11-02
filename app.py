@@ -1,7 +1,426 @@
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import json
+import os
+import hashlib
 
 app = Flask(__name__)
+
+# ==========================================
+# CONFIGURATION
+# ==========================================
+
+FUSEAU_HORAIRE = ZoneInfo("Europe/Paris")
+FICHIER_QUETES = "quetes_data.json"
+
+# À configurer avant de connecter publiquement
+# le serveur Minecraft à cette API.
+CLE_API = os.environ.get("POKEORIGINS_API_KEY")
+
+
+def date_actuelle():
+    return datetime.now(FUSEAU_HORAIRE).date().isoformat()
+
+
+def semaine_actuelle():
+    return datetime.now(FUSEAU_HORAIRE).strftime("%G-W%V")
+
+
+# ==========================================
+# QUETES QUOTIDIENNES
+# ==========================================
+
+QUETES_QUOTIDIENNES = [
+    {
+        "id": "capture_daily",
+        "nom": "Petit collectionneur",
+        "description": "Capturer 3 Pokémon.",
+        "evenement": "capture",
+        "objectif": 3,
+        "xp": 20
+    },
+    {
+        "id": "combat_daily",
+        "nom": "Combattant du jour",
+        "description": "Gagner 2 combats Pokémon.",
+        "evenement": "combat",
+        "objectif": 2,
+        "xp": 30
+    },
+    {
+        "id": "exploration_daily",
+        "nom": "Explorateur",
+        "description": "Explorer 1 biome.",
+        "evenement": "biome",
+        "objectif": 1,
+        "xp": 50
+    }
+]
+
+
+# ==========================================
+# CATALOGUE DES QUETES HEBDOMADAIRES
+# ==========================================
+
+CATALOGUE_HEBDOMADAIRE = [
+    {
+        "id": "capture_week",
+        "nom": "Grand collectionneur",
+        "description": "Capturer 40 Pokémon.",
+        "evenement": "capture",
+        "objectif": 40,
+        "xp": 120
+    },
+    {
+        "id": "combat_week",
+        "nom": "Combattant expérimenté",
+        "description": "Gagner 15 combats.",
+        "evenement": "combat",
+        "objectif": 15,
+        "xp": 120
+    },
+    {
+        "id": "raid_week",
+        "nom": "Chasseur de raids",
+        "description": "Participer à 5 raids.",
+        "evenement": "raid",
+        "objectif": 5,
+        "xp": 120
+    },
+    {
+        "id": "trainer_week",
+        "nom": "Dresseur redoutable",
+        "description": "Vaincre 10 dresseurs.",
+        "evenement": "trainer",
+        "objectif": 10,
+        "xp": 120
+    },
+    {
+        "id": "biome_week",
+        "nom": "Grand explorateur",
+        "description": "Explorer 3 biomes différents.",
+        "evenement": "biome",
+        "objectif": 3,
+        "xp": 120
+    },
+    {
+        "id": "evolution_week",
+        "nom": "Maître de l'évolution",
+        "description": "Faire évoluer 5 Pokémon.",
+        "evenement": "evolution",
+        "objectif": 5,
+        "xp": 120
+    },
+    {
+        "id": "trade_week",
+        "nom": "Marchand Pokémon",
+        "description": "Effectuer 3 échanges au GTS.",
+        "evenement": "trade",
+        "objectif": 3,
+        "xp": 120
+    },
+    {
+        "id": "distance_week",
+        "nom": "Voyageur",
+        "description": "Parcourir 5 000 blocs.",
+        "evenement": "blocks",
+        "objectif": 5000,
+        "xp": 120
+    }
+]
+
+
+# ==========================================
+# SAUVEGARDE DES QUETES
+# ==========================================
+
+def charger_donnees_quetes():
+
+    if not os.path.exists(FICHIER_QUETES):
+        return {}
+
+    try:
+        with open(FICHIER_QUETES, "r", encoding="utf-8") as fichier:
+            return json.load(fichier)
+
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def sauvegarder_donnees_quetes(donnees):
+
+    with open(FICHIER_QUETES, "w", encoding="utf-8") as fichier:
+        json.dump(
+            donnees,
+            fichier,
+            indent=4,
+            ensure_ascii=False
+        )
+
+
+def creer_etat_quetes():
+
+    return {
+        "date": date_actuelle(),
+        "semaine": semaine_actuelle(),
+        "progression": {},
+        "recompenses": [],
+        "xp_battlepass": 0
+    }
+
+
+def obtenir_etat_quetes():
+
+    donnees = charger_donnees_quetes()
+
+    if "joueur_demo" not in donnees:
+        donnees["joueur_demo"] = creer_etat_quetes()
+
+    etat = donnees["joueur_demo"]
+
+    # Réinitialisation quotidienne
+    if etat.get("date") != date_actuelle():
+
+        etat["date"] = date_actuelle()
+
+        for quete in QUETES_QUOTIDIENNES:
+            etat["progression"].pop(quete["id"], None)
+            etat["recompenses"] = [
+                r for r in etat["recompenses"]
+                if r != quete["id"]
+            ]
+
+    # Réinitialisation hebdomadaire
+    if etat.get("semaine") != semaine_actuelle():
+
+        etat["semaine"] = semaine_actuelle()
+
+        for quete in CATALOGUE_HEBDOMADAIRE:
+            etat["progression"].pop(quete["id"], None)
+            etat["recompenses"] = [
+                r for r in etat["recompenses"]
+                if r != quete["id"]
+            ]
+
+    sauvegarder_donnees_quetes(donnees)
+
+    return etat
+
+
+# ==========================================
+# SELECTION DES 5 QUETES HEBDOMADAIRES
+# ==========================================
+
+def obtenir_quetes_hebdomadaires():
+
+    numero_semaine = datetime.now(FUSEAU_HORAIRE).isocalendar().week
+
+    debut = (numero_semaine * 5) % len(CATALOGUE_HEBDOMADAIRE)
+
+    catalogue = CATALOGUE_HEBDOMADAIRE
+
+    return [
+        catalogue[(debut + i) % len(catalogue)].copy()
+        for i in range(5)
+    ]
+
+
+# ==========================================
+# PROGRESSION AUTOMATIQUE
+# ==========================================
+
+def enregistrer_evenement(evenement, quantite=1):
+
+    if not isinstance(quantite, int) or quantite < 1:
+        return False
+
+    etat = obtenir_etat_quetes()
+
+    toutes_les_quetes = (
+        QUETES_QUOTIDIENNES
+        + obtenir_quetes_hebdomadaires()
+    )
+
+    for quete in toutes_les_quetes:
+
+        if quete["evenement"] != evenement:
+            continue
+
+        identifiant = quete["id"]
+
+        if identifiant in etat["recompenses"]:
+            continue
+
+        progression = etat["progression"].get(identifiant, 0)
+
+        progression = min(
+            progression + quantite,
+            quete["objectif"]
+        )
+
+        etat["progression"][identifiant] = progression
+
+        # Récompense automatique une seule fois
+        if progression >= quete["objectif"]:
+
+            etat["recompenses"].append(identifiant)
+
+            etat["xp_battlepass"] += quete["xp"]
+
+    donnees = charger_donnees_quetes()
+    donnees["joueur_demo"] = etat
+    sauvegarder_donnees_quetes(donnees)
+
+    return True
+
+
+# ==========================================
+# AFFICHAGE DES QUETES
+# ==========================================
+
+def preparer_quetes(quetes, etat):
+
+    resultat = []
+
+    for quete in quetes:
+
+        copie = quete.copy()
+
+        identifiant = copie["id"]
+
+        progression = etat["progression"].get(identifiant, 0)
+
+        copie["progression"] = progression
+
+        copie["terminee"] = (
+            progression >= copie["objectif"]
+        )
+
+        copie["reclamee"] = (
+            identifiant in etat["recompenses"]
+        )
+
+        copie["pourcentage"] = round(
+            progression / copie["objectif"] * 100
+        )
+
+        resultat.append(copie)
+
+    return resultat
+
+
+def obtenir_resume_quetes():
+
+    etat = obtenir_etat_quetes()
+
+    quotidiennes = preparer_quetes(
+        QUETES_QUOTIDIENNES,
+        etat
+    )
+
+    hebdomadaires = preparer_quetes(
+        obtenir_quetes_hebdomadaires(),
+        etat
+    )
+
+    return {
+        "quotidiennes": quotidiennes,
+        "hebdomadaires": hebdomadaires,
+        "xp_battlepass": etat["xp_battlepass"],
+        "xp_quotidienne": sum(
+            q["xp"] for q in QUETES_QUOTIDIENNES
+        ),
+        "xp_hebdomadaire": 600,
+        "quotidiennes_terminees": sum(
+            q["terminee"] for q in quotidiennes
+        ),
+        "hebdomadaires_terminees": sum(
+            q["terminee"] for q in hebdomadaires
+        )
+    }
+
+
+# ==========================================
+# PAGE DES QUETES
+# ==========================================
+
+@app.route("/quetes")
+def quetes():
+
+    progression = obtenir_resume_quetes()
+
+    return render_template(
+        "quetes.html",
+        progression=progression,
+        quetes_quotidiennes=progression["quotidiennes"],
+        quetes_hebdomadaires=progression["hebdomadaires"]
+    )
+
+
+# ==========================================
+# API DE PROGRESSION MINECRAFT
+# ==========================================
+
+@app.route("/api/quetes/progression", methods=["POST"])
+def api_progression_quetes():
+
+    # Protection obligatoire de l'API
+    if not CLE_API:
+        return jsonify({
+            "succes": False,
+            "erreur": "API non configurée."
+        }), 503
+
+    cle = request.headers.get("X-API-Key")
+
+    if cle != CLE_API:
+        return jsonify({
+            "succes": False,
+            "erreur": "Accès refusé."
+        }), 401
+
+    donnees = request.get_json(silent=True) or {}
+
+    evenement = donnees.get("evenement")
+    quantite = donnees.get("quantite", 1)
+
+    evenements_autorises = [
+        "capture",
+        "combat",
+        "raid",
+        "trainer",
+        "biome",
+        "evolution",
+        "trade",
+        "blocks"
+    ]
+
+    if evenement not in evenements_autorises:
+        return jsonify({
+            "succes": False,
+            "erreur": "Événement inconnu."
+        }), 400
+
+    if (
+        not isinstance(quantite, int)
+        or isinstance(quantite, bool)
+        or quantite < 1
+        or quantite > 100000
+    ):
+        return jsonify({
+            "succes": False,
+            "erreur": "Quantité invalide."
+        }), 400
+
+    enregistrer_evenement(evenement, quantite)
+
+    return jsonify({
+        "succes": True,
+        "progression": obtenir_resume_quetes()
+    })
+
 
 # ==========================================
 # SYSTÈME DES 8 ARÈNES POKEORIGINS
@@ -138,8 +557,6 @@ ARENES = [
     }
 ]
 
-# Badges actuellement obtenus par le joueur.
-# À connecter plus tard au système de comptes.
 BADGES_OBTENUS = []
 
 
@@ -201,6 +618,7 @@ def joueur():
     minecraft_lie = False
 
     progression_arenes = obtenir_progression_arenes()
+    progression_quetes = obtenir_resume_quetes()
 
     informations_joueur = {
         "pseudo": "Non connecté",
@@ -237,7 +655,8 @@ def joueur():
         stats=statistiques,
         pokemons=pokemons,
         pokedex=pokedex,
-        progression_arenes=progression_arenes
+        progression_arenes=progression_arenes,
+        progression_quetes=progression_quetes
     )
 
 
