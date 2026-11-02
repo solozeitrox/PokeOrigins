@@ -458,60 +458,34 @@
         // AFFICHAGE DES ONGLETS ADMIN ET ANNONCES
 
         async function verifierRoleStaff(utilisateur) {
+    const lienAdmin = document.getElementById("adminMenuLink");
 
-            const lienAdmin =
-                document.getElementById("adminMenuLink");
+    if (lienAdmin) {
+        lienAdmin.style.display = "none";
+    }
 
-            const lienAnnonces =
-                document.getElementById("annoncesMenuLink");
+    if (!utilisateur) return;
 
-            // Toujours cacher les liens avant la vérification
+    try {
+        const { data: profil, error } = await window.supabaseClient
+            .from("profiles")
+            .select("role")
+            .eq("id", utilisateur.id)
+            .single();
 
-            lienAdmin.style.display = "none";
-            lienAnnonces.style.display = "none";
-
-            if (!utilisateur) {
-                return;
-            }
-
-            try {
-
-                const { data: profil, error } =
-                    await window.supabaseClient
-                        .from("profiles")
-                        .select("role")
-                        .eq("id", utilisateur.id)
-                        .single();
-
-                if (error || !profil) {
-
-                    console.error(
-                        "Impossible de vérifier le rôle :",
-                        error
-                    );
-
-                    return;
-                }
-
-                const estStaff =
-                    ["admin", "moderateur"].includes(profil.role);
-
-                if (estStaff) {
-
-                    lienAdmin.style.display = "block";
-                    lienAnnonces.style.display = "block";
-
-                }
-
-            } catch (erreur) {
-
-                console.error(
-                    "Erreur lors de la vérification du rôle :",
-                    erreur
-                );
-
-            }
+        if (error || !profil) {
+            console.error("Erreur de vérification du rôle :", error);
+            return;
         }
+
+        if (["admin", "moderateur"].includes(profil.role) && lienAdmin) {
+            lienAdmin.style.display = "block";
+        }
+
+    } catch (erreur) {
+        console.error("Erreur :", erreur);
+    }
+}
 
 
         // SYNCHRONISATION AVEC FLASK
