@@ -316,8 +316,8 @@ async function initialiserActualites() {
         }
     }
 
-    if (["admin", "moderateur"].includes(roleActuel)) {
-        document.getElementById("gestionAnnonce").style.display = "block";
+    if (["admin", "moderateur", "staff"].includes(roleActuel)) {
+    document.getElementById("gestionAnnonce").style.display = "block";
     }
 
     await chargerActualites();
@@ -444,7 +444,7 @@ async function publierActualite() {
     const categorie = document.getElementById("categorieAnnonce").value;
     const message = document.getElementById("messageActualites");
 
-    if (!["admin", "moderateur"].includes(roleActuel)) {
+    if (!["admin", "moderateur", "staff"].includes(roleActuel)) {
         message.textContent = "⛔ Tu n'as pas l'autorisation de publier.";
         return;
     }
