@@ -1,283 +1,888 @@
 
 {% extends "base.html" %}
 
-{% block title %}Boutique - PokeOrigins{% endblock %}
+{% block title %}Boutique officielle - PokeOrigins{% endblock %}
 
 {% block content %}
 
 <style>
 .boutique-page {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 25px;
+    max-width: 1250px;
+    margin: 35px auto;
+    padding: 20px;
     color: white;
 }
 
-/* EN-TÊTE */
+.boutique-page * {
+    box-sizing: border-box;
+}
 
-.boutique-header {
+/* HEADER */
+
+.shop-header {
     text-align: center;
-    padding: 40px 20px;
-    margin-bottom: 30px;
-    background: rgba(8, 30, 65, 0.85);
-    border: 1px solid rgba(65, 165, 255, 0.5);
+    padding: 45px 20px;
+    margin-bottom: 25px;
+    background: linear-gradient(135deg, rgba(5,35,80,.96), rgba(0,85,160,.65));
+    border: 1px solid rgba(65,190,255,.5);
     border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,130,255,.12);
 }
 
-.boutique-header .icon {
-    font-size: 50px;
-    margin-bottom: 10px;
-}
-
-.boutique-header h1 {
-    color: #65c5ff;
-    font-size: 36px;
+.shop-header .shop-icon {
+    font-size: 55px;
     margin-bottom: 12px;
 }
 
-.boutique-header p {
+.shop-header h1 {
+    color: #65c5ff;
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.shop-header p {
     color: #d5eaff;
     line-height: 1.7;
 }
 
-/* MON SOLDE */
+/* PANIER */
 
-.solde-box {
+.shop-toolbar {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    padding: 22px 25px;
-    margin-bottom: 35px;
-    background: rgba(0, 80, 150, 0.25);
-    border: 1px solid rgba(65, 165, 255, 0.4);
-    border-radius: 15px;
+    justify-content: flex-end;
+    margin-bottom: 25px;
 }
 
-.solde-box h2 {
-    color: #65c5ff;
-    font-size: 20px;
-}
-
-.solde-box .solde {
-    color: #ffd45c;
-    font-size: 23px;
+.cart-button {
+    padding: 13px 22px;
+    border: 1px solid #38baff;
+    border-radius: 11px;
+    background: rgba(0,100,200,.3);
+    color: white;
     font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.cart-button:hover {
+    background: #0876c9;
+    box-shadow: 0 0 15px rgba(0,160,255,.3);
+}
+
+.cart-count {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 23px;
+    height: 23px;
+    margin-left: 7px;
+    background: #ffd45c;
+    color: #14213a;
+    border-radius: 50%;
+    font-size: 12px;
+}
+
+/* CATEGORIES */
+
+.category-navigation {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.category-link {
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #c5e8ff;
+    background: rgba(5,35,75,.9);
+    border: 1px solid rgba(65,165,255,.35);
+    font-size: 14px;
+    font-weight: bold;
+    transition: .2s;
+}
+
+.category-link:hover {
+    color: white;
+    background: rgba(0,120,220,.5);
+    border-color: #45c5ff;
 }
 
 /* SECTIONS */
 
-.boutique-section {
-    margin-bottom: 40px;
+.shop-section {
+    margin-bottom: 50px;
+    scroll-margin-top: 25px;
 }
 
-.section-title {
-    color: #65c5ff;
+.shop-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    margin-bottom: 22px;
+    color: #70caff;
     font-size: 25px;
-    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(65,165,255,.3);
 }
 
-/* CARTES */
+/* PRODUITS */
 
-.boutique-grid {
+.shop-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
 }
 
-.boutique-card {
-    padding: 25px 20px;
+.shop-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    background: rgba(8, 30, 65, 0.88);
-    border: 1px solid rgba(65, 155, 255, 0.35);
+    padding: 25px 20px;
+    min-height: 300px;
+    background: linear-gradient(145deg, rgba(8,35,75,.96), rgba(3,20,48,.96));
+    border: 1px solid rgba(65,155,255,.35);
     border-radius: 17px;
-    transition: 0.25s;
+    transition: .25s;
 }
 
-.boutique-card:hover {
+.shop-card:hover {
     transform: translateY(-5px);
     border-color: #55baff;
-    box-shadow: 0 0 20px rgba(0, 145, 255, 0.2);
+    box-shadow: 0 0 22px rgba(0,145,255,.2);
 }
 
-.boutique-card .item-icon {
-    font-size: 48px;
+.shop-item-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 85px;
+    height: 85px;
     margin-bottom: 15px;
+    border-radius: 20px;
+    background: rgba(0,110,210,.18);
+    border: 1px solid rgba(65,175,255,.25);
+    font-size: 45px;
 }
 
-.boutique-card h3 {
-    color: #75caff;
+.shop-card h3 {
+    color: #82d0ff;
     font-size: 19px;
     margin-bottom: 12px;
 }
 
-.boutique-card p {
-    color: #d2e5ff;
+.shop-card p {
+    color: #c5dcf4;
     font-size: 14px;
-    line-height: 1.7;
-    min-height: 48px;
+    line-height: 1.6;
+    flex: 1;
 }
 
-.item-price {
+.shop-price {
     color: #ffd45c;
+    font-size: 21px;
     font-weight: bold;
-    font-size: 17px;
     margin: 18px 0;
 }
 
-.buy-button {
-    display: inline-block;
-    padding: 11px 22px;
-    background: rgba(20, 120, 210, 0.35);
-    border: 1px solid #55baff;
+.add-cart {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #38baff;
     border-radius: 9px;
-    color: #bce5ff;
-    font-weight: bold;
+    color: white;
+    background: linear-gradient(90deg,#086bbd,#109ee5);
     font-size: 14px;
-    cursor: not-allowed;
-    opacity: 0.7;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
 }
 
-/* INFORMATION */
+.add-cart:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px rgba(0,155,255,.3);
+}
 
-.boutique-info {
-    padding: 23px;
-    background: rgba(5, 25, 55, 0.8);
-    border: 1px solid rgba(65, 155, 255, 0.3);
-    border-radius: 15px;
-    color: #d2e5ff;
+.add-cart:active {
+    transform: scale(.97);
+}
+
+/* PANIER LATÉRAL */
+
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(0,0,0,.7);
+    opacity: 0;
+    visibility: hidden;
+    transition: .25s;
+}
+
+.cart-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cart-panel {
+    position: fixed;
+    z-index: 501;
+    top: 0;
+    right: -450px;
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(145deg,#0b2850,#04142d);
+    border-left: 2px solid #159dff;
+    transition: right .3s;
+}
+
+.cart-panel.active {
+    right: 0;
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(65,165,255,.3);
+}
+
+.cart-header h2 {
+    color: #65c5ff;
+}
+
+.cart-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px 0;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 50px 10px;
+    color: #a9c9e8;
     line-height: 1.8;
 }
 
-.boutique-info h2 {
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(65,165,255,.2);
+}
+
+.cart-item-name {
+    color: #d9efff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.cart-item-price {
+    color: #ffd45c;
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+.remove-item {
+    border: none;
+    background: rgba(220,50,60,.2);
+    color: #ff8c94;
+    border-radius: 7px;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.cart-footer {
+    padding-top: 20px;
+    border-top: 1px solid rgba(65,165,255,.3);
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.cart-total span:last-child {
+    color: #ffd45c;
+}
+
+.checkout-button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 9px;
+    background: #1266a8;
+    color: white;
+    font-weight: bold;
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+.clear-cart {
+    display: block;
+    margin: 13px auto 0;
+    border: none;
+    background: none;
+    color: #9bc8ed;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* INFORMATIONS */
+
+.shop-information {
+    padding: 25px;
+    background: rgba(4,25,55,.9);
+    border: 1px solid rgba(65,155,255,.3);
+    border-radius: 15px;
+    line-height: 1.8;
+    color: #c9e0f5;
+}
+
+.shop-information h2 {
     color: #65c5ff;
     margin-bottom: 12px;
 }
 
+.shop-information ul {
+    padding-left: 22px;
+    margin-top: 10px;
+}
+
 /* RESPONSIVE */
 
-@media (max-width: 850px) {
-    .boutique-grid {
-        grid-template-columns: repeat(2, 1fr);
+@media(max-width:850px) {
+    .shop-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
     }
 }
 
-@media (max-width: 550px) {
-    .boutique-grid {
+@media(max-width:550px) {
+    .boutique-page {
+        padding: 12px;
+        margin-top: 20px;
+    }
+
+    .shop-header {
+        padding: 30px 15px;
+    }
+
+    .shop-header h1 {
+        font-size: 28px;
+    }
+
+    .shop-grid {
         grid-template-columns: 1fr;
     }
 
-    .solde-box {
-        flex-direction: column;
-        align-items: flex-start;
+    .shop-section-title {
+        font-size: 21px;
     }
 
-    .boutique-header h1 {
-        font-size: 28px;
+    .category-navigation {
+        gap: 7px;
+    }
+
+    .category-link {
+        padding: 10px 12px;
+        font-size: 12px;
     }
 }
 </style>
 
-<main class="boutique-page">
 
-    <header class="boutique-header">
-        <div class="icon">🛒</div>
-        <h1>Boutique PokeOrigins</h1>
+<div class="boutique-page">
+
+    <!-- EN-TÊTE -->
+
+    <header class="shop-header">
+        <div class="shop-icon">🛒</div>
+        <h1>Boutique officielle</h1>
         <p>
-            Bienvenue dans la boutique officielle de PokeOrigins !
-            Découvrez les pièces, les récompenses et les objets
-            disponibles pour votre aventure.
+            Bienvenue dans la boutique PokeOrigins !<br>
+            Personnalise ton aventure, débloque des récompenses
+            et profite des avantages disponibles.
         </p>
     </header>
 
-    <div class="solde-box">
-        <h2>💰 Mon portefeuille</h2>
-        <div class="solde">0 pièces</div>
+    <!-- PANIER -->
+
+    <div class="shop-toolbar">
+        <button class="cart-button" onclick="openCart()">
+            🛒 Mon panier
+            <span class="cart-count" id="cartCount">0</span>
+        </button>
     </div>
 
-    <!-- PIECES -->
+    <!-- NAVIGATION -->
 
-    <section class="boutique-section">
+    <nav class="category-navigation">
+        <a class="category-link" href="#grades">🏆 Grades</a>
+        <a class="category-link" href="#nayos">💰 Nayos</a>
+        <a class="category-link" href="#cosmetiques">✨ Cosmétiques</a>
+        <a class="category-link" href="#battlepass">🎟️ Battle Pass</a>
+        <a class="category-link" href="#packs">🎁 Packs spéciaux</a>
+    </nav>
 
-        <h2 class="section-title">💰 Acheter des pièces</h2>
 
-        <div class="boutique-grid">
+    <!-- GRADES -->
 
-            <div class="boutique-card">
-                <div class="item-icon">🪙</div>
-                <h3>Petit paquet</h3>
-                <p>Un petit montant de pièces pour commencer.</p>
-                <div class="item-price">Prix à définir</div>
-                <button class="buy-button" disabled>Bientôt disponible</button>
+    <section class="shop-section" id="grades">
+
+        <h2 class="shop-section-title">🏆 Grades permanents</h2>
+
+        <div class="shop-grid">
+
+            <div class="shop-card">
+                <div class="shop-item-icon">⭐</div>
+                <h3>VIP</h3>
+                <p>Découvre ton premier grade et profite de ton statut VIP permanent.</p>
+                <div class="shop-price">2,99 €</div>
+                <button class="add-cart" onclick="addToCart('VIP',2.99)">Ajouter au panier</button>
             </div>
 
-            <div class="boutique-card">
-                <div class="item-icon">💰</div>
-                <h3>Paquet moyen</h3>
-                <p>Une réserve de pièces pour vos achats.</p>
-                <div class="item-price">Prix à définir</div>
-                <button class="buy-button" disabled>Bientôt disponible</button>
+            <div class="shop-card">
+                <div class="shop-item-icon">🌟</div>
+                <h3>VIP+</h3>
+                <p>Passe au niveau supérieur avec le grade VIP+ permanent.</p>
+                <div class="shop-price">4,99 €</div>
+                <button class="add-cart" onclick="addToCart('VIP+',4.99)">Ajouter au panier</button>
             </div>
 
-            <div class="boutique-card">
-                <div class="item-icon">💎</div>
-                <h3>Grand paquet</h3>
-                <p>Une grande quantité de pièces pour votre aventure.</p>
-                <div class="item-price">Prix à définir</div>
-                <button class="buy-button" disabled>Bientôt disponible</button>
+            <div class="shop-card">
+                <div class="shop-item-icon">💎</div>
+                <h3>Élite</h3>
+                <p>Un grade prestigieux pour les joueurs les plus investis.</p>
+                <div class="shop-price">9,99 €</div>
+                <button class="add-cart" onclick="addToCart('Élite',9.99)">Ajouter au panier</button>
             </div>
 
-        </div>
-
-    </section>
-
-    <!-- RECOMPENSES -->
-
-    <section class="boutique-section">
-
-        <h2 class="section-title">🎁 Récompenses</h2>
-
-        <div class="boutique-grid">
-
-            <div class="boutique-card">
-                <div class="item-icon">🎒</div>
-                <h3>Pack aventurier</h3>
-                <p>Une récompense pour accompagner vos premières aventures.</p>
-                <div class="item-price">Prix à définir</div>
-                <button class="buy-button" disabled>Bientôt disponible</button>
+            <div class="shop-card">
+                <div class="shop-item-icon">👑</div>
+                <h3>Légende</h3>
+                <p>Affiche ton prestige avec le grade Légende permanent.</p>
+                <div class="shop-price">14,99 €</div>
+                <button class="add-cart" onclick="addToCart('Légende',14.99)">Ajouter au panier</button>
             </div>
 
-            <div class="boutique-card">
-                <div class="item-icon">✨</div>
-                <h3>Bonus spécial</h3>
-                <p>Un bonus spécial à découvrir dans la boutique.</p>
-                <div class="item-price">Prix à définir</div>
-                <button class="buy-button" disabled>Bientôt disponible</button>
-            </div>
-
-            <div class="boutique-card">
-                <div class="item-icon">🏆</div>
-                <h3>Récompense exclusive</h3>
-                <p>Une récompense spéciale pour les collectionneurs.</p>
-                <div class="item-price">Prix à définir</div>
-                <button class="buy-button" disabled>Bientôt disponible</button>
+            <div class="shop-card">
+                <div class="shop-item-icon">🔱</div>
+                <h3>Originel</h3>
+                <p>Le grade ultime de la boutique PokeOrigins.</p>
+                <div class="shop-price">24,99 €</div>
+                <button class="add-cart" onclick="addToCart('Originel',24.99)">Ajouter au panier</button>
             </div>
 
         </div>
-
     </section>
+
+
+    <!-- NAYOS -->
+
+    <section class="shop-section" id="nayos">
+
+        <h2 class="shop-section-title">💰 Packs de Nayos</h2>
+
+        <div class="shop-grid">
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🪙</div>
+                <h3>5 000 Nayos</h3>
+                <p>Un petit stock de monnaie pour tes premiers achats.</p>
+                <div class="shop-price">0,99 €</div>
+                <button class="add-cart" onclick="addToCart('5 000 Nayos',0.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">💰</div>
+                <h3>15 000 Nayos</h3>
+                <p>Une réserve supplémentaire pour ton aventure.</p>
+                <div class="shop-price">2,99 €</div>
+                <button class="add-cart" onclick="addToCart('15 000 Nayos',2.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">💎</div>
+                <h3>35 000 Nayos</h3>
+                <p>Une belle réserve de Nayos pour tes achats.</p>
+                <div class="shop-price">4,99 €</div>
+                <button class="add-cart" onclick="addToCart('35 000 Nayos',4.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🏦</div>
+                <h3>80 000 Nayos</h3>
+                <p>Une grande quantité de monnaie pour tes projets.</p>
+                <div class="shop-price">9,99 €</div>
+                <button class="add-cart" onclick="addToCart('80 000 Nayos',9.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">👑</div>
+                <h3>200 000 Nayos</h3>
+                <p>Le plus grand pack de Nayos disponible.</p>
+                <div class="shop-price">19,99 €</div>
+                <button class="add-cart" onclick="addToCart('200 000 Nayos',19.99)">Ajouter au panier</button>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- COSMETIQUES -->
+
+    <section class="shop-section" id="cosmetiques">
+
+        <h2 class="shop-section-title">✨ Cosmétiques</h2>
+
+        <div class="shop-grid">
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🏷️</div>
+                <h3>Titre personnalisé</h3>
+                <p>Affiche un titre personnalisé sur ton profil.</p>
+                <div class="shop-price">0,99 €</div>
+                <button class="add-cart" onclick="addToCart('Titre personnalisé',0.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🔵</div>
+                <h3>Aura simple</h3>
+                <p>Ajoute une aura visuelle à ton personnage.</p>
+                <div class="shop-price">1,99 €</div>
+                <button class="add-cart" onclick="addToCart('Aura simple',1.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">✨</div>
+                <h3>Effet de capture</h3>
+                <p>Personnalise les effets visuels de tes captures.</p>
+                <div class="shop-price">2,49 €</div>
+                <button class="add-cart" onclick="addToCart('Effet de capture',2.49)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🌌</div>
+                <h3>Particules spéciales</h3>
+                <p>Des particules originales pour personnaliser ton personnage.</p>
+                <div class="shop-price">2,99 €</div>
+                <button class="add-cart" onclick="addToCart('Particules spéciales',2.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🔴</div>
+                <h3>Apparence de Poké Ball</h3>
+                <p>Personnalise l'apparence de tes Poké Balls.</p>
+                <div class="shop-price">3,49 €</div>
+                <button class="add-cart" onclick="addToCart('Apparence de Poké Ball',3.49)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🎭</div>
+                <h3>Pack de 3 emotes</h3>
+                <p>Trois emotes pour exprimer tes émotions en jeu.</p>
+                <div class="shop-price">2,99 €</div>
+                <button class="add-cart" onclick="addToCart('Pack de 3 emotes',2.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🌟</div>
+                <h3>Aura légendaire</h3>
+                <p>Une aura exclusive pour te démarquer.</p>
+                <div class="shop-price">4,99 €</div>
+                <button class="add-cart" onclick="addToCart('Aura légendaire',4.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🎁</div>
+                <h3>Pack cosmétique complet</h3>
+                <p>Un ensemble de cosmétiques pour personnaliser ton aventure.</p>
+                <div class="shop-price">7,99 €</div>
+                <button class="add-cart" onclick="addToCart('Pack cosmétique complet',7.99)">Ajouter au panier</button>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- BATTLE PASS -->
+
+    <section class="shop-section" id="battlepass">
+
+        <h2 class="shop-section-title">🎟️ Battle Pass</h2>
+
+        <div class="shop-grid">
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🎟️</div>
+                <h3>Premium Saison 1</h3>
+                <p>Débloque la version Premium du Battle Pass de la saison 1.</p>
+                <div class="shop-price">4,99 €</div>
+                <button class="add-cart" onclick="addToCart('Premium Saison 1',4.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🏆</div>
+                <h3>Premium + cosmétique exclusif</h3>
+                <p>Le Battle Pass Premium accompagné d'un cosmétique exclusif.</p>
+                <div class="shop-price">7,99 €</div>
+                <button class="add-cart" onclick="addToCart('Premium + cosmétique exclusif',7.99)">Ajouter au panier</button>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- PACKS SPECIAUX -->
+
+    <section class="shop-section" id="packs">
+
+        <h2 class="shop-section-title">🎁 Packs spéciaux</h2>
+
+        <div class="shop-grid">
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🎒</div>
+                <h3>Pack Bienvenue</h3>
+                <p>Titre personnalisé, aura simple et 5 000 Nayos.</p>
+                <div class="shop-price">2,99 €</div>
+                <button class="add-cart" onclick="addToCart('Pack Bienvenue',2.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">🧭</div>
+                <h3>Pack Explorateur</h3>
+                <p>Un ensemble de cosmétiques et 15 000 Nayos.</p>
+                <div class="shop-price">5,99 €</div>
+                <button class="add-cart" onclick="addToCart('Pack Explorateur',5.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">💎</div>
+                <h3>Pack Collectionneur</h3>
+                <p>Aura rare, effets spéciaux et 35 000 Nayos.</p>
+                <div class="shop-price">9,99 €</div>
+                <button class="add-cart" onclick="addToCart('Pack Collectionneur',9.99)">Ajouter au panier</button>
+            </div>
+
+            <div class="shop-card">
+                <div class="shop-item-icon">👑</div>
+                <h3>Pack Fondateur</h3>
+                <p>Titre, skin et aura exclusive pour les fondateurs.</p>
+                <div class="shop-price">24,99 €</div>
+                <button class="add-cart" onclick="addToCart('Pack Fondateur',24.99)">Ajouter au panier</button>
+            </div>
+
+        </div>
+    </section>
+
 
     <!-- INFORMATIONS -->
 
-    <section class="boutique-info">
+    <section class="shop-information">
         <h2>ℹ️ Informations sur la boutique</h2>
+
         <p>
-            La boutique est actuellement en préparation.
-            Les articles, les prix et les achats seront activés
-            prochainement.
+            La boutique officielle de PokeOrigins propose des grades,
+            des Nayos et des éléments de personnalisation.
+        </p>
+
+        <ul>
+            <li>Les grades sont permanents.</li>
+            <li>Les cosmétiques ne donnent aucun avantage en combat.</li>
+            <li>Les prix sont compris entre 0,99 € et 24,99 €.</li>
+            <li>Les achats seront livrés automatiquement en jeu après validation du paiement.</li>
+            <li>Les prix et quantités de Nayos pourront être équilibrés avant publication.</li>
+        </ul>
+
+        <p style="margin-top:15px;color:#ffd45c;">
+            ⚠️ Les achats et les paiements ne sont pas encore activés.
         </p>
     </section>
 
-</main>
+</div>
+
+
+<!-- PANIER LATÉRAL -->
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+<aside class="cart-panel" id="cartPanel">
+
+    <div class="cart-header">
+        <h2>🛒 Mon panier</h2>
+        <button class="cart-close" onclick="closeCart()">×</button>
+    </div>
+
+    <div class="cart-items" id="cartItems">
+        <div class="empty-cart">
+            🛒<br>
+            Ton panier est vide.<br>
+            Découvre les produits de la boutique !
+        </div>
+    </div>
+
+    <div class="cart-footer">
+
+        <div class="cart-total">
+            <span>Total</span>
+            <span id="cartTotal">0,00 €</span>
+        </div>
+
+        <button class="checkout-button" disabled>
+            🔒 Paiement bientôt disponible
+        </button>
+
+        <button class="clear-cart" onclick="clearCart()">
+            Vider le panier
+        </button>
+
+    </div>
+
+</aside>
+
+
+<script>
+
+/* PANIER */
+
+let cart = [];
+
+function openCart() {
+    document.getElementById("cartPanel").classList.add("active");
+    document.getElementById("cartOverlay").classList.add("active");
+}
+
+function closeCart() {
+    document.getElementById("cartPanel").classList.remove("active");
+    document.getElementById("cartOverlay").classList.remove("active");
+}
+
+function addToCart(name, price) {
+
+    cart.push({
+        name: name,
+        price: price
+    });
+
+    updateCart();
+
+    const button = event.currentTarget;
+    const originalText = button.textContent;
+
+    button.textContent = "✓ Ajouté !";
+
+    setTimeout(() => {
+        button.textContent = originalText;
+    }, 1000);
+}
+
+function removeFromCart(index) {
+
+    cart.splice(index, 1);
+    updateCart();
+
+}
+
+function clearCart() {
+
+    cart = [];
+    updateCart();
+
+}
+
+function updateCart() {
+
+    const container = document.getElementById("cartItems");
+    const count = document.getElementById("cartCount");
+    const totalElement = document.getElementById("cartTotal");
+
+    count.textContent = cart.length;
+
+    let total = cart.reduce((sum, item) => sum + item.price, 0);
+
+    totalElement.textContent = total.toFixed(2).replace(".", ",") + " €";
+
+    if (cart.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-cart">
+                🛒<br>
+                Ton panier est vide.<br>
+                Découvre les produits de la boutique !
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    cart.forEach((item, index) => {
+
+        const element = document.createElement("div");
+        element.className = "cart-item";
+
+        const information = document.createElement("div");
+
+        const name = document.createElement("div");
+        name.className = "cart-item-name";
+        name.textContent = item.name;
+
+        const price = document.createElement("div");
+        price.className = "cart-item-price";
+        price.textContent = item.price.toFixed(2).replace(".", ",") + " €";
+
+        information.appendChild(name);
+        information.appendChild(price);
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "remove-item";
+        removeButton.textContent = "✕";
+        removeButton.setAttribute("aria-label", "Supprimer " + item.name);
+        removeButton.addEventListener("click", () => removeFromCart(index));
+
+        element.appendChild(information);
+        element.appendChild(removeButton);
+
+        container.appendChild(element);
+
+    });
+
+}
+
+/* FERMETURE AVEC ECHAP */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Escape") {
+        closeCart();
+    }
+
+});
+
+</script>
 
 {% endblock %}
