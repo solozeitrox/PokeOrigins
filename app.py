@@ -27,41 +27,36 @@ def presentation():
 @app.route("/joueur")
 def joueur():
 
+    # Pour le moment, aucun compte Minecraft n'est réellement connecté.
+    minecraft_lie = False
+
     informations_joueur = {
-        "pseudo": "Aventurier",
-        "minecraft_lie": False,
+        "pseudo": "Non connecté",
+        "minecraft_lie": minecraft_lie,
         "pseudo_minecraft": "Non connecté",
-        "niveau": 12,
-        "xp": 750,
-        "xp_suivant": 1000,
-        "progression_xp": 75
+        "niveau": 0,
+        "xp": 0,
+        "xp_suivant": 0,
+        "progression_xp": 0
     }
 
     statistiques = {
-        "captures": 2,
-        "decouverts": 4,
-        "combats": 38,
-        "victoires": 29,
-        "champions": 2,
-        "argent": 12500,
-        "badges": 2,
-        "temps_jeu": "12h 35min"
+        "captures": 0,
+        "decouverts": 0,
+        "combats": 0,
+        "victoires": 0,
+        "champions": 0,
+        "argent": 0,
+        "badges": 0,
+        "temps_jeu": "0h"
     }
 
-    pokemons = [
-        {"numero": 1, "nom": "Bulbizarre", "types": ["Plante", "Poison"], "decouvert": True, "capture": True},
-        {"numero": 4, "nom": "Salamèche", "types": ["Feu"], "decouvert": True, "capture": True},
-        {"numero": 7, "nom": "Carapuce", "types": ["Eau"], "decouvert": True, "capture": False},
-        {"numero": 25, "nom": "Pikachu", "types": ["Électrik"], "decouvert": True, "capture": False},
-        {"numero": 6, "nom": "Dracaufeu", "types": ["Feu", "Vol"], "decouvert": False, "capture": False}
-    ]
+    pokemons = []
 
     pokedex = {
-        "captures": sum(1 for p in pokemons if p["capture"]),
+        "captures": 0,
         "total": 151,
-        "pourcentage": round(
-            sum(1 for p in pokemons if p["capture"]) / 151 * 100, 1
-        )
+        "pourcentage": 0
     }
 
     return render_template(

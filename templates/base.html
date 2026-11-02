@@ -37,16 +37,17 @@
             background-repeat: no-repeat;
         }
 
-    body.fond-wiki {
-        background-image:
-           linear-gradient(rgba(3, 12, 30, 0.25), rgba(3, 12, 30, 0.25)),
-           url("/static/image/icons/fond%20home.png");
+        body.fond-wiki {
+            background-image:
+                linear-gradient(rgba(3, 12, 30, 0.25), rgba(3, 12, 30, 0.25)),
+                url("/static/image/icons/fond%20home.png");
 
-         background-size: cover;
-         background-position: center;
-         background-repeat: no-repeat;
-         background-attachment: fixed;
-    }
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
         /* HEADER */
 
         .site-header {
@@ -81,6 +82,10 @@
             color: white;
             font-size: 27px;
             cursor: pointer;
+        }
+
+        .menu-button:hover {
+            background: rgba(0, 145, 255, 0.4);
         }
 
         /* CONNEXION MINECRAFT */
@@ -135,6 +140,7 @@
             background: rgba(3, 20, 55, 0.98);
             border-right: 2px solid #159dff;
             transition: left 0.3s ease;
+            overflow-y: auto;
         }
 
         .side-menu.active {
@@ -294,10 +300,14 @@
             line-height: 1.5;
         }
 
+        /* CONTENU */
+
         .page-content {
             flex: 1 0 auto;
             width: 100%;
         }
+
+        /* PIED DE PAGE */
 
         footer {
             width: 100%;
@@ -310,6 +320,8 @@
             color: rgba(210, 230, 255, 0.65);
             font-size: 13px;
         }
+
+        /* RESPONSIVE */
 
         @media (max-width: 600px) {
             .site-header {
@@ -342,9 +354,17 @@
 
 <body class="{% if request.path.startswith('/wiki') %}fond-wiki{% endif %}">
 
+    <!-- HEADER -->
+
     <header class="site-header">
 
-        <button class="menu-button" onclick="toggleMenu()">☰</button>
+        <button
+            class="menu-button"
+            onclick="toggleMenu()"
+            aria-label="Ouvrir le menu"
+            aria-expanded="false"
+            id="menuButton"
+        >☰</button>
 
         <a href="/" class="site-logo">⚡ PokeOrigins</a>
 
@@ -358,8 +378,13 @@
 
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
-    <nav class="side-menu" id="sideMenu">
-        <button class="menu-close" onclick="toggleMenu()">×</button>
+    <nav class="side-menu" id="sideMenu" aria-label="Navigation principale">
+
+        <button
+            class="menu-close"
+            onclick="toggleMenu()"
+            aria-label="Fermer le menu"
+        >×</button>
 
         <div class="menu-title">⚡ PokeOrigins</div>
 
@@ -367,12 +392,12 @@
         <a href="/presentation">🌍 Présentation</a>
         <a href="/wiki">📘 Wiki</a>
         <a href="/joueur">👤 Joueur</a>
-        <a href="/pokedex">📘 Mon Pokédex</a>
         <a href="/vote">🗳️ Vote</a>
         <a href="/boutique">🛒 Boutique</a>
         <a href="/actualites">📰 Actualités</a>
         <a href="/classements">🏆 Classements</a>
         <a href="/discord">💬 Discord</a>
+
     </nav>
 
     <!-- FENÊTRE DE CONNEXION -->
@@ -381,7 +406,11 @@
 
         <div class="connection-box">
 
-            <button class="connection-close" onclick="closeConnection()">×</button>
+            <button
+                class="connection-close"
+                onclick="closeConnection()"
+                aria-label="Fermer"
+            >×</button>
 
             <div class="connection-icon">🔗</div>
 
@@ -400,12 +429,15 @@
                 <input
                     type="text"
                     id="minecraftUsername"
-                    placeholder="Exemple :"tonPseudo"
+                    placeholder="Exemple : tonPseudo"
                     maxlength="16"
                     autocomplete="off"
                 >
 
-                <button class="connection-submit" onclick="requestMinecraftCode()">
+                <button
+                    class="connection-submit"
+                    onclick="requestMinecraftCode()"
+                >
                     Demander un code
                 </button>
 
@@ -429,7 +461,10 @@
                     autocomplete="off"
                 >
 
-                <button class="connection-submit" onclick="verifyMinecraftCode()">
+                <button
+                    class="connection-submit"
+                    onclick="verifyMinecraftCode()"
+                >
                     Confirmer la connexion
                 </button>
 
@@ -443,17 +478,39 @@
 
     </div>
 
-    <div class="page-content">
+    <!-- CONTENU DES PAGES -->
+
+    <main class="page-content">
         {% block content %}{% endblock %}
-    </div>
+    </main>
+
+    <!-- JAVASCRIPT -->
 
     <script>
 
         /* MENU */
 
         function toggleMenu() {
-            document.getElementById("sideMenu").classList.toggle("active");
-            document.getElementById("menuOverlay").classList.toggle("active");
+
+            const menu = document.getElementById("sideMenu");
+            const overlay = document.getElementById("menuOverlay");
+            const button = document.getElementById("menuButton");
+
+            menu.classList.toggle("active");
+            overlay.classList.toggle("active");
+
+            button.setAttribute(
+                "aria-expanded",
+                menu.classList.contains("active")
+            );
+        }
+
+        function closeMenu() {
+
+            document.getElementById("sideMenu").classList.remove("active");
+            document.getElementById("menuOverlay").classList.remove("active");
+            document.getElementById("menuButton").setAttribute("aria-expanded", "false");
+
         }
 
         /* FENÊTRE DE CONNEXION */
@@ -474,15 +531,17 @@
             const message = document.getElementById("connectionMessage1");
 
             if (!/^[A-Za-z0-9_]{3,16}$/.test(pseudo)) {
+
                 message.textContent = "Veuillez entrer un pseudo Minecraft valide.";
                 return;
+
             }
 
             message.textContent =
                 "L'interface est prête. L'envoi réel du code sera activé lors de la connexion au serveur.";
 
             // La demande au serveur Fabric sera ajoutée ici.
-            // Ne pas afficher un faux code ou considérer le joueur comme connecté.
+            // Aucun faux code ne sera affiché.
         }
 
         /* ÉTAPE 2 - VÉRIFICATION */
@@ -493,8 +552,10 @@
             const message = document.getElementById("connectionMessage2");
 
             if (!/^[A-Za-z0-9]{4,8}$/.test(code)) {
+
                 message.textContent = "Veuillez entrer un code valide.";
                 return;
+
             }
 
             message.textContent =
@@ -508,8 +569,7 @@
         document.addEventListener("keydown", function(event) {
 
             if (event.key === "Escape") {
-                document.getElementById("sideMenu").classList.remove("active");
-                document.getElementById("menuOverlay").classList.remove("active");
+                closeMenu();
                 closeConnection();
             }
 

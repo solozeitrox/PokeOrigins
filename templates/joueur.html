@@ -28,6 +28,57 @@
     margin-top: 10px;
 }
 
+/* CONNEXION REQUISE */
+
+.connexion-requise {
+    margin: 25px 0;
+    padding: 30px 20px;
+    text-align: center;
+    background: linear-gradient(145deg, rgba(7,27,55,.96), rgba(2,12,31,.97));
+    border: 1px solid rgba(50,190,255,.5);
+    border-radius: 18px;
+    box-shadow: 0 0 20px rgba(0,140,255,.12);
+}
+
+.connexion-icone {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.connexion-requise h2 {
+    color: #70eaff;
+    margin-bottom: 12px;
+}
+
+.connexion-requise p {
+    color: #c5d7e8;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.connexion-requise button {
+    padding: 13px 22px;
+    color: white;
+    font-weight: bold;
+    background: linear-gradient(90deg, #0876d1, #13a9ed);
+    border: 1px solid #45caff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.connexion-requise button:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px rgba(0,170,255,.3);
+}
+
+.connexion-requise span {
+    display: block;
+    margin-top: 15px;
+    color: #8faac3;
+    font-size: 12px;
+}
+
 /* PROFIL */
 
 .profil-card {
@@ -71,7 +122,7 @@
 }
 
 .niveau {
-    color: #ffd76a;
+    color: #ffd76a !important;
     font-weight: bold;
 }
 
@@ -217,7 +268,6 @@
     width: 105px;
     height: 105px;
     object-fit: contain;
-    image-rendering: pixelated;
 }
 
 .pokemon-numero {
@@ -274,19 +324,29 @@
     border: 1px solid #52677c;
 }
 
-.pokemon-inconnu img {
-    filter: grayscale(1) brightness(.35);
-}
+/* POKEDEX VIDE */
 
-.pokemon-inconnu .pokemon-nom {
-    color: #71849a;
-}
-
-.pokedex-note {
-    color: #8faac3;
+.pokedex-vide {
+    padding: 35px 20px;
     text-align: center;
-    margin-top: 22px;
-    font-size: 13px;
+    background: linear-gradient(145deg, rgba(7,27,55,.95), rgba(2,12,31,.97));
+    border: 1px dashed rgba(50,190,255,.4);
+    border-radius: 15px;
+}
+
+.pokedex-vide .icone {
+    font-size: 45px;
+    margin-bottom: 12px;
+}
+
+.pokedex-vide h3 {
+    color: #70eaff;
+    margin-bottom: 10px;
+}
+
+.pokedex-vide p {
+    color: #8faac3;
+    font-size: 14px;
 }
 
 @media(max-width: 600px) {
@@ -314,6 +374,34 @@
         <h1>👤 Mon espace joueur</h1>
         <p>Retrouve ton profil, tes statistiques et ta collection Pokémon.</p>
     </div>
+
+
+    <!-- MESSAGE DE CONNEXION -->
+
+    {% if not joueur.minecraft_lie %}
+
+    <div class="connexion-requise">
+
+        <div class="connexion-icone">🔗</div>
+
+        <h2>Connecte ton compte Minecraft</h2>
+
+        <p>
+            Pour accéder à ton profil PokeOrigins, à tes statistiques
+            et à ton Pokédex personnel, tu dois connecter ton compte Minecraft.
+        </p>
+
+        <button onclick="openConnection()">
+            🎮 Connecter Minecraft
+        </button>
+
+        <span>
+            Tes données apparaîtront ici une fois ton compte connecté.
+        </span>
+
+    </div>
+
+    {% endif %}
 
 
     <!-- PROFIL -->
@@ -447,65 +535,69 @@
 
     <!-- COLLECTION -->
 
+    {% if pokemons %}
+
     <div class="pokemon-grid">
 
         {% for pokemon in pokemons %}
 
-            <div class="pokemon-card {% if not pokemon.decouvert %}pokemon-inconnu{% endif %}">
+        <div class="pokemon-card">
 
-                <div class="pokemon-numero">
-                    N° {{ "%03d"|format(pokemon.numero) }}
-                </div>
-
-                <img
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ pokemon.numero }}.png"
-                    alt="{{ pokemon.nom }}"
-                    loading="lazy"
-                >
-
-                <div class="pokemon-nom">
-                    {% if pokemon.decouvert %}
-                        {{ pokemon.nom }}
-                    {% else %}
-                        ???
-                    {% endif %}
-                </div>
-
-                {% if pokemon.decouvert %}
-
-                    <div class="pokemon-types">
-                        {% for type in pokemon.types %}
-                            <span class="type">{{ type }}</span>
-                        {% endfor %}
-                    </div>
-
-                    {% if pokemon.capture %}
-                        <span class="pokemon-statut capture">
-                            ✓ Capturé
-                        </span>
-                    {% else %}
-                        <span class="pokemon-statut decouvert">
-                            Découvert
-                        </span>
-                    {% endif %}
-
-                {% else %}
-
-                    <span class="pokemon-statut inconnu">
-                        Non découvert
-                    </span>
-
-                {% endif %}
-
+            <div class="pokemon-numero">
+                N° {{ "%03d"|format(pokemon.numero) }}
             </div>
+
+            <img
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ pokemon.numero }}.png"
+                alt="{{ pokemon.nom }}"
+                loading="lazy"
+            >
+
+            <div class="pokemon-nom">
+                {{ pokemon.nom }}
+            </div>
+
+            <div class="pokemon-types">
+                {% for type in pokemon.types %}
+                    <span class="type">{{ type }}</span>
+                {% endfor %}
+            </div>
+
+            {% if pokemon.capture %}
+                <span class="pokemon-statut capture">
+                    ✓ Capturé
+                </span>
+            {% elif pokemon.decouvert %}
+                <span class="pokemon-statut decouvert">
+                    Découvert
+                </span>
+            {% endif %}
+
+        </div>
 
         {% endfor %}
 
     </div>
 
-    <p class="pokedex-note">
-        Les Pokémon affichés sont actuellement des données de démonstration.
-    </p>
+    {% else %}
+
+    <div class="pokedex-vide">
+
+        <div class="icone">📖</div>
+
+        <h3>Ton Pokédex est vide</h3>
+
+        <p>
+            {% if not joueur.minecraft_lie %}
+                Connecte ton compte Minecraft pour commencer ta collection Pokémon.
+            {% else %}
+                Tu n'as pas encore découvert ou capturé de Pokémon.
+            {% endif %}
+        </p>
+
+    </div>
+
+    {% endif %}
 
 </div>
 
