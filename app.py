@@ -38,8 +38,8 @@ def joueur():
     }
 
     statistiques = {
-        "captures": 24,
-        "decouverts": 56,
+        "captures": 2,
+        "decouverts": 4,
         "combats": 38,
         "victoires": 29,
         "champions": 2,
@@ -48,10 +48,28 @@ def joueur():
         "temps_jeu": "12h 35min"
     }
 
+    pokemons = [
+        {"numero": 1, "nom": "Bulbizarre", "types": ["Plante", "Poison"], "decouvert": True, "capture": True},
+        {"numero": 4, "nom": "Salamèche", "types": ["Feu"], "decouvert": True, "capture": True},
+        {"numero": 7, "nom": "Carapuce", "types": ["Eau"], "decouvert": True, "capture": False},
+        {"numero": 25, "nom": "Pikachu", "types": ["Électrik"], "decouvert": True, "capture": False},
+        {"numero": 6, "nom": "Dracaufeu", "types": ["Feu", "Vol"], "decouvert": False, "capture": False}
+    ]
+
+    pokedex = {
+        "captures": sum(1 for p in pokemons if p["capture"]),
+        "total": 151,
+        "pourcentage": round(
+            sum(1 for p in pokemons if p["capture"]) / 151 * 100, 1
+        )
+    }
+
     return render_template(
         "joueur.html",
         joueur=informations_joueur,
-        stats=statistiques
+        stats=statistiques,
+        pokemons=pokemons,
+        pokedex=pokedex
     )
 
 
