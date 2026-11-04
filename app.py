@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import json
 import os
 import hashlib
+import secrets
 
 app = Flask(__name__)
 
@@ -80,6 +81,146 @@ def verifier_token_supabase(token):
     except requests.RequestException:
         return None
 
+
+def obtenir_auth_battlepass():
+
+    utilisateur = session.get("utilisateur")
+
+    if not utilisateur:
+        return None, None
+
+    token = request.headers.get("Authorization", "").replace(
+        "Bearer ", "", 1
+    )
+
+    utilisateur_verifie = verifier_token_supabase(token)
+
+    if (
+        not utilisateur_verifie
+        or utilisateur_verifie.get("id") != utilisateur.get("id")
+    ):
+        return None, None
+
+    return utilisateur, token
+
+
+@app.route("/api/battlepass/progression", methods=["GET"])
+def api_battlepass_progression():
+
+    utilisateur, token = obtenir_auth_battlepass()
+
+    if not utilisateur:
+        return jsonify({
+            "succes": False,
+            "erreur": "Tu dois être connecté."
+        }), 401
+
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        # Récupérer les Nayos du joueur
+        profil_reponse = requests.get(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            headers=headers,
+            params={
+                "select": "nayos",
+                "id": f"eq.{utilisateur['id']}"
+            },
+            timeout=10
+        )
+
+        if profil_reponse.status_code != 200:
+            return jsonify({
+                "succes": False,
+                "erreur": "Impossible de récupérer les Nayos."
+            }), 503
+
+        profils = profil_reponse.json()
+
+        if not profils:
+            return jsonify({
+                "succes": False,
+                "erreur": "Profil joueur introuvable."
+            }), 404
+
+        nayos = int(profils[0].get("nayos", 0))
+
+        # Récupérer la progression du Battle Pass
+        progression_reponse = requests.get(
+            f"{SUPABASE_URL}/rest/v1/battlepass_progression",
+            headers=headers,
+            params={
+                "select": "saison,niveau,xp,premium,recompenses_reclamees",
+                "user_id": f"eq.{utilisateur['id']}"
+            },
+            timeout=10
+        )
+
+        if progression_reponse.status_code != 200:
+            return jsonify({
+                "succes": False,
+                "erreur": "Impossible de récupérer le Battle Pass."
+            }), 503
+
+        progressions = progression_reponse.json()
+
+        # Créer la progression si elle n'existe pas
+        if not progressions:
+            creation = requests.post(
+                f"{SUPABASE_URL}/rest/v1/battlepass_progression",
+                headers={
+                    **headers,
+                    "Prefer": "return=representation"
+                },
+                json={
+                    "user_id": utilisateur["id"],
+                    "saison": 1,
+                    "niveau": 1,
+                    "xp": 0,
+                    "premium": False,
+                    "recompenses_reclamees": []
+                },
+                timeout=10
+            )
+
+            if creation.status_code not in (200, 201):
+                print("ERREUR CREATION BATTLE PASS :", creation.text)
+                return jsonify({
+                    "succes": False,
+                    "erreur": "Impossible de créer la progression."
+                }), 503
+
+            progressions = creation.json()
+
+        progression = progressions[0]
+
+        # Calcul de la progression affichée
+        niveau = max(1, min(50, int(progression["niveau"])))
+        xp_total = int(progression["xp"])
+        xp_palier = xp_total % 5000 if niveau < 50 else 5000
+
+        return jsonify({
+            "succes": True,
+            "saison": progression["saison"],
+            "niveau": niveau,
+            "xp_battlepass": xp_palier,
+            "xp_total": xp_total,
+            "xp_prochain_niveau": 5000,
+            "premium_actif": progression["premium"],
+            "recompenses_reclamees": progression["recompenses_reclamees"],
+            "nayos": nayos
+        })
+
+    except requests.RequestException as erreur:
+        print("ERREUR BATTLE PASS :", str(erreur))
+        return jsonify({
+            "succes": False,
+            "erreur": "Erreur de connexion à Supabase."
+        }), 503
 
 
 @app.route("/auth/session", methods=["POST"])

@@ -422,6 +422,19 @@
             {{ supabase_key | tojson }}
         );
 
+        // RÉCUPÉRATION DU TOKEN SUPABASE
+
+    async function obtenirTokenSupabase() {
+
+    const { data, error } =
+        await window.supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+        return null;
+    }
+
+    return data.session.access_token;
+     }
 
         // AFFICHAGE DU COMPTE
 

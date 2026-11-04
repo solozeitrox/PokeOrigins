@@ -1,0 +1,1020 @@
+{% extends "base.html" %}
+{% block title %}Battle Pass - PokeOrigins{% endblock %}
+{% block content %}
+
+<style>
+.bp {
+    max-width: 1450px;
+    margin: 25px auto;
+    padding: 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.bp-window {
+    background: linear-gradient(145deg,#101b40,#171333 75%,#0b1835);
+    border: 4px solid #b38b37;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 0 25px #0009, inset 0 0 25px #4762a522;
+}
+
+.bp-header {
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 20px;
+}
+
+.bp-logo {
+    color: #f5d66b;
+    font-size: 34px;
+    font-weight: 1000;
+    text-shadow: 2px 3px 0 #583b13, 0 0 15px #f3c34c77;
+}
+
+.bp-header h1 {
+    color: #ffd65b;
+    font-size: 48px;
+    margin: 4px;
+    text-shadow: 3px 4px 0 #49320d;
+}
+
+.bp-header p {
+    color: #b9c8ec;
+}
+
+.bp-top {
+    display: grid;
+    grid-template-columns: 1fr 370px;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.bp-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.bp-tab {
+    flex: 1;
+    padding: 13px 8px;
+    background: #171e43;
+    border: 2px solid #394477;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.bp-tab.active {
+    background: linear-gradient(#ffe17a,#c28b22);
+    color: #30200b;
+    border-color: #ffdf69;
+}
+
+.bp-progress {
+    background: #10182f;
+    border: 2px solid #394b83;
+    border-radius: 13px;
+    padding: 17px;
+}
+
+.bp-level {
+    font-size: 25px;
+    font-weight: bold;
+    color: #ffdb69;
+    margin-bottom: 10px;
+}
+
+.bp-bar {
+    height: 23px;
+    border-radius: 20px;
+    background: #090e24;
+    border: 2px solid #42558c;
+    overflow: hidden;
+}
+
+.bp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg,#1689ff,#5cc8ff);
+    transition: width .3s;
+}
+
+.bp-xp {
+    text-align: center;
+    color: #d8e7ff;
+    margin-top: 7px;
+    font-weight: bold;
+}
+
+.bp-premium {
+    background: linear-gradient(140deg,#513b16,#251d32);
+    border: 3px solid #e4b83e;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+}
+
+.bp-premium h2 {
+    color: #ffdf72;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.bp-premium p {
+    color: #f5dca2;
+    margin-bottom: 12px;
+}
+
+.bp-buy {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(#ffdf69,#d79b1d);
+    border: 2px solid #ffe99a;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #271900;
+}
+
+.bp-buy:hover {
+    filter: brightness(1.12);
+}
+
+.bp-owned {
+    background: #18583b;
+    color: #a8ffc9;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.bp-grid {
+    display: grid;
+    grid-template-columns: 190px repeat(10,minmax(75px,1fr));
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.bp-cell {
+    min-width: 75px;
+    min-height: 105px;
+    border: 2px solid #45517d;
+    border-radius: 7px;
+    background: linear-gradient(145deg,#1b2853,#171632);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 7px 3px;
+    position: relative;
+}
+
+.bp-cell.level-head {
+    min-height: 36px;
+    min-width: 75px;
+    background: #242b50;
+    color: #ffd765;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.bp-cell.lane {
+    min-width: 180px;
+    font-size: 19px;
+    font-weight: bold;
+    flex-direction: row;
+    gap: 10px;
+    background: #202b54;
+}
+
+.bp-cell.lane.premium-lane {
+    background: linear-gradient(135deg,#75551b,#382b18);
+    border-color: #d4a73d;
+}
+
+.bp-cell.reward.free {
+    border-color: #416e80;
+}
+
+.bp-cell.reward.premium {
+    border-color: #886c38;
+}
+
+.bp-cell.reward.available {
+    border-color: #ffd54e;
+    box-shadow: inset 0 0 12px #ffce3533;
+}
+
+.bp-cell.reward.claimed {
+    border-color: #35c76a;
+    background: #183b35;
+}
+
+.bp-cell.reward.locked {
+    opacity: .75;
+}
+
+.bp-icon {
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.bp-name {
+    color: #f1f3ff;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1.3;
+}
+
+.bp-quantity {
+    color: #ffdc83;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.bp-status {
+    color: #74ef9a;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.bp-claim {
+    margin-top: 6px;
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 7px;
+    background: #238c50;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.bp-claim:hover {
+    background: #32b765;
+}
+
+.bp-claim:disabled {
+    background: #39445b;
+    cursor: not-allowed;
+}
+
+.bp-claim-form {
+    width: 100%;
+}
+
+.bp-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.bp-page-btn {
+    background: #42627c;
+    border: 2px solid #9bc8dd;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 17px;
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.bp-page-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.bp-page-number {
+    background: #171c40;
+    border: 2px solid #4c4b83;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+.bp-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.bp-quests-count {
+    color: #d9e4ff;
+    font-weight: bold;
+}
+
+.bp-collect {
+    padding: 14px 30px;
+    border: 2px solid #9bea70;
+    border-radius: 10px;
+    background: linear-gradient(#7be53e,#319e20);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.bp-collect:hover {
+    filter: brightness(1.12);
+}
+
+.bp-panel {
+    display: none;
+    background: #151c40;
+    border: 2px solid #414d80;
+    padding: 25px;
+    border-radius: 12px;
+    min-height: 220px;
+}
+
+.bp-panel.active {
+    display: block;
+}
+
+.bp-panel h2 {
+    color: #ffda70;
+    margin-bottom: 15px;
+}
+
+.bp-panel p {
+    color: #c4d2f1;
+    line-height: 1.8;
+}
+
+.bp-quest {
+    background: #20284c;
+    border: 1px solid #455481;
+    padding: 15px;
+    border-radius: 9px;
+    margin: 10px 0;
+}
+
+.bp-quest strong {
+    color: #ffdc79;
+}
+
+.bp-quest span {
+    color: #a8c4ed;
+}
+
+@media(max-width:800px) {
+    .bp-top {
+        grid-template-columns: 1fr;
+    }
+
+    .bp-header h1 {
+        font-size: 34px;
+    }
+
+    .bp-grid {
+        grid-template-columns: 145px repeat(10,75px);
+    }
+
+    .bp-cell.lane {
+        min-width: 135px;
+        font-size: 15px;
+    }
+
+    .bp-window {
+        padding: 10px;
+    }
+}
+
+@media(max-width:500px) {
+    .bp-tabs {
+        flex-wrap: wrap;
+    }
+
+    .bp-tab {
+        min-width: 90px;
+        font-size: 13px;
+    }
+
+    .bp-header h1 {
+        font-size: 29px;
+    }
+
+    .bp-bottom {
+        flex-direction: column;
+    }
+
+    .bp-collect {
+        width: 100%;
+    }
+}
+</style>
+
+
+<div class="bp">
+<div class="bp-window">
+
+    <!-- HEADER -->
+
+    <header class="bp-header">
+        <div class="bp-logo">🔴 PokeOrigins</div>
+        <h1>BATTLE PASS</h1>
+        <p>SAISON 1 — ORIGINES</p>
+    </header>
+
+
+    <!-- PROGRESSION -->
+
+    <div class="bp-top">
+
+        <div>
+
+            <div class="bp-tabs">
+
+                <button class="bp-tab active"
+                        type="button"
+                        onclick="openTab('rewards',this)">
+                    🎁 Récompenses
+                </button>
+
+                <button class="bp-tab"
+                        type="button"
+                        onclick="openTab('quests',this)">
+                    📋 Quêtes
+                </button>
+
+                <button class="bp-tab"
+                        type="button"
+                        onclick="openTab('infos',this)">
+                    ℹ️ Infos
+                </button>
+
+            </div>
+
+
+            <div class="bp-progress">
+
+                <div class="bp-level" id="bpLevel">
+                    🔴 Niveau {{ niveau_battlepass|default(1) }}
+                </div>
+
+                <div class="bp-bar">
+                    <div class="bp-bar-fill"
+                         id="xpBar"
+                         style="width:{{ [100, ((xp_battlepass|default(0)|int) / (xp_prochain_niveau|default(5000)|int if (xp_prochain_niveau|default(5000)|int)>0 else 5000) * 100)]|min|round|int }}%">
+                    </div>
+                </div>
+
+                <div class="bp-xp" id="bpXp">
+                    {{ xp_battlepass|default(0) }}
+                    /
+                    {{ xp_prochain_niveau|default(5000) }} XP
+                </div>
+
+                <div class="bp-xp" id="bpNayos">
+                    🪙 {{ nayos|default(0)|int }} Nayos
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PREMIUM -->
+
+        <div class="bp-premium">
+
+            <h2>👑 Battle Pass Premium</h2>
+
+            <p>Débloque les 50 récompenses Premium !</p>
+
+            {% if premium_actif|default(false) %}
+
+                <div class="bp-owned">
+                    ✓ PREMIUM ACTIVÉ
+                </div>
+
+            {% else %}
+
+                <form method="POST"
+                      action="/battlepass/acheter"
+                      onsubmit="return confirm('Débloquer le Battle Pass Premium pour 100 000 Nayos ?');">
+
+                    <button class="bp-buy" type="submit">
+                        🪙 Débloquer — 100 000 Nayos
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- RECOMPENSES -->
+
+    <div id="rewards" class="bp-panel active">
+
+        <div class="bp-grid" id="rewardGrid"></div>
+
+        <div class="bp-pagination">
+
+            <button class="bp-page-btn"
+                    id="prevPage"
+                    type="button"
+                    onclick="changePage(-1)">
+                ❮
+            </button>
+
+            <div class="bp-page-number" id="pageLabel">
+                Page 1 / 5
+            </div>
+
+            <button class="bp-page-btn"
+                    id="nextPage"
+                    type="button"
+                    onclick="changePage(1)">
+                ❯
+            </button>
+
+        </div>
+
+        <div class="bp-bottom">
+
+            <div class="bp-quests-count">
+                📋 Quêtes disponibles :
+                {{ quetes_disponibles|default(0) }}
+            </div>
+
+            <button class="bp-collect"
+                    type="button"
+                    onclick="collectAll()">
+                🎁 Tout récupérer
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUETES -->
+
+    <div id="quests" class="bp-panel">
+
+        <h2>📋 Quêtes du Battle Pass</h2>
+
+        <div class="bp-quest">
+
+            <strong>🌟 Quêtes quotidiennes</strong>
+
+            <p>
+                Effectue des missions chaque jour pour gagner de l'XP.
+            </p>
+
+            <span>3 missions quotidiennes disponibles.</span>
+
+        </div>
+
+        <div class="bp-quest">
+
+            <strong>🏆 Quêtes hebdomadaires</strong>
+
+            <p>
+                Relève des défis plus importants pour progresser.
+            </p>
+
+            <span>5 missions hebdomadaires disponibles.</span>
+
+        </div>
+
+        <p>
+            Les récompenses et la progression des missions seront reliées au serveur.
+        </p>
+
+    </div>
+
+
+    <!-- INFORMATIONS -->
+
+    <div id="infos" class="bp-panel">
+
+        <h2>ℹ️ Informations — Saison 1</h2>
+
+        <p>🎟️ Le Battle Pass contient 50 niveaux.</p>
+
+        <p>🎁 La piste gratuite est accessible à tous.</p>
+
+        <p>👑 La piste Premium coûte 100 000 Nayos.</p>
+
+        <p>⭐ Les récompenses doivent être récupérées manuellement.</p>
+
+        <p>🔒 Une récompense récupérée ne peut pas être récupérée une seconde fois.</p>
+
+        <p>⚔️ Les récompenses ne donnent aucun avantage injuste en combat.</p>
+
+    </div>
+
+</div>
+</div>
+
+
+<!-- FORMULAIRE RECUPERATION GROUPEE -->
+
+<form id="collectAllForm"
+      method="POST"
+      action="/battlepass/reclamer-tout"
+      style="display:none;">
+
+    <input type="hidden"
+           name="page"
+           id="collectPage"
+           value="1">
+
+</form>
+
+
+<script>
+
+// ==================================================
+// RECOMPENSES GRATUITES
+// ==================================================
+
+const gratuit = [
+
+["Poké Balls",16,"🔴"],
+["Potions",5,"🧪"],
+["Super Balls",5,"🔵"],
+["Super Bonbons",3,"🍬"],
+["Nayos",2500,"🪙"],
+["Rappels",5,"💊"],
+["Baies",10,"🫐"],
+["Hyper Balls",5,"⚫"],
+["Clé de caisse",1,"🗝️"],
+["Œuf classique",1,"🥚"],
+
+["Potions",5,"🧪"],
+["Poké Balls",16,"🔴"],
+["Super Balls",10,"🔵"],
+["Super Bonbons",5,"🍬"],
+["Nayos",5000,"🪙"],
+["Baies",10,"🫐"],
+["Clé de caisse",1,"🗝️"],
+["Rappels",5,"💊"],
+["Hyper Balls",10,"⚫"],
+["Œuf rare",1,"🥚"],
+
+["Super Bonbons",5,"🍬"],
+["Super Balls",10,"🔵"],
+["Potions",5,"🧪"],
+["Clé de caisse",1,"🗝️"],
+["Nayos",7500,"🪙"],
+["Hyper Balls",10,"⚫"],
+["Rappels",5,"💊"],
+["Œuf rare",1,"🥚"],
+["Clé de caisse",1,"🗝️"],
+["Lucario Originel",1,"🐺"],
+
+["Hyper Balls",10,"⚫"],
+["Super Bonbons",5,"🍬"],
+["Œuf rare",1,"🥚"],
+["Clé de caisse",1,"🗝️"],
+["Nayos",10000,"🪙"],
+["Super Balls",10,"🔵"],
+["Rappels",5,"💊"],
+["Œuf rare",1,"🥚"],
+["Hyper Balls",10,"⚫"],
+["Œuf épique",1,"🥚"],
+
+["Super Bonbons",10,"🍬"],
+["Clé de caisse",1,"🗝️"],
+["Hyper Balls",10,"⚫"],
+["Œuf épique",1,"🥚"],
+["Nayos",15000,"🪙"],
+["Super Bonbons",10,"🍬"],
+["Œuf rare",1,"🥚"],
+["Clé de caisse",1,"🗝️"],
+["Œuf épique",1,"🥚"],
+["Œuf légendaire",1,"🌟"]
+
+];
+
+
+// ==================================================
+// RECOMPENSES PREMIUM
+// ==================================================
+
+const premium = [
+
+["Raichu Originel",1,"⚡"],
+["Super Balls",10,"🔵"],
+["Super Bonbons",3,"🍬"],
+["Clé de caisse",1,"🗝️"],
+["Nayos",5000,"🪙"],
+["Hyper Balls",10,"⚫"],
+["Œuf classique",1,"🥚"],
+["Super Bonbons",5,"🍬"],
+["Clé Premium",1,"🔑"],
+["Œuf rare",1,"🥚"],
+
+["Hyper Balls",10,"⚫"],
+["Super Bonbons",2,"🍬"],
+["Clé de caisse",1,"🗝️"],
+["Œuf classique",1,"🥚"],
+["Nayos",10000,"🪙"],
+["Hyper Balls",5,"⚫"],
+["Clé Premium",1,"🔑"],
+["Œuf rare",1,"🥚"],
+["Super Bonbons",5,"🍬"],
+["Œuf épique",1,"🥚"],
+
+["Hyper Balls",10,"⚫"],
+["Clé Premium",1,"🔑"],
+["Œuf rare",1,"🥚"],
+["Super Bonbons",5,"🍬"],
+["Nayos",15000,"🪙"],
+["Œuf épique",1,"🥚"],
+["Clé Premium",1,"🔑"],
+["Super Bonbons",10,"🍬"],
+["Œuf épique",1,"🥚"],
+["Dracaufeu Originel",1,"🔥"],
+
+["Clé Premium",1,"🔑"],
+["Œuf épique",1,"🥚"],
+["Hyper Balls",10,"⚫"],
+["Clé Premium",1,"🔑"],
+["Nayos",20000,"🪙"],
+["Œuf épique",1,"🥚"],
+["Super Bonbons",10,"🍬"],
+["Clé Premium",1,"🔑"],
+["Œuf légendaire",1,"🌟"],
+["Œuf légendaire",1,"🌟"],
+
+["Clé Premium",1,"🔑"],
+["Œuf épique",1,"🥚"],
+["Super Bonbons",15,"🍬"],
+["Œuf légendaire",1,"🌟"],
+["Nayos",25000,"🪙"],
+["Clé Premium",1,"🔑"],
+["Œuf légendaire",1,"🌟"],
+["Œuf épique",1,"🥚"],
+["Clés Premium",2,"🔑"],
+["Coffre Originel exclusif",1,"🎁"]
+
+];
+
+
+// ==================================================
+// PROGRESSION
+// ==================================================
+
+const currentLevel = Math.max(
+    1,
+    Math.min(50, Number({{ niveau_battlepass|default(1)|tojson }}))
+);
+
+const premiumActive = {{ premium_actif|default(false)|tojson }};
+
+const claimed = {{ recompenses_reclamees|default([])|tojson }};
+
+let currentPage = 0;
+
+
+// ==================================================
+// VERIFICATION DES RECOMPENSES
+// ==================================================
+
+function isClaimed(track,level) {
+
+    return claimed.includes(track + "_" + level);
+
+}
+
+
+// ==================================================
+// CREATION DES CARTES
+// ==================================================
+
+function rewardCard(track,level) {
+
+    const data = track === "gratuit"
+        ? gratuit[level-1]
+        : premium[level-1];
+
+    if (!data) return "";
+
+    const [name,quantity,icon] = data;
+
+    const isPremium = track === "premium";
+
+    const unlocked = level <= currentLevel &&
+        (!isPremium || premiumActive);
+
+    const already = isClaimed(track,level);
+
+    let status = "";
+
+    if (already) {
+
+        status = `
+            <div class="bp-status">
+                ✓ Récupéré
+            </div>
+        `;
+
+    } else if (!unlocked) {
+
+        status = `
+            <div class="bp-status">
+                🔒 Verrouillé
+            </div>
+        `;
+
+    } else {
+
+        status = `
+            <form class="bp-claim-form"
+                  method="POST"
+                  action="/battlepass/reclamer">
+
+                <input type="hidden"
+                       name="niveau"
+                       value="${level}">
+
+                <input type="hidden"
+                       name="piste"
+                       value="${track}">
+
+                <button class="bp-claim"
+                        type="submit">
+                    Récupérer
+                </button>
+
+            </form>
+        `;
+
+    }
+
+    return `
+        <div class="bp-cell reward ${track}
+            ${already ? "claimed" : unlocked ? "available" : "locked"}">
+
+            <div class="bp-icon">${icon}</div>
+
+            <div class="bp-name">${name}</div>
+
+            <div class="bp-quantity">
+                ×${quantity.toLocaleString("fr-FR")}
+            </div>
+
+            ${status}
+
+        </div>
+    `;
+
+}
+
+
+// ==================================================
+// AFFICHAGE DES RECOMPENSES
+// ==================================================
+
+function renderRewards() {
+
+    const grid = document.getElementById("rewardGrid");
+
+    const start = currentPage * 10;
+
+    let html = `
+        <div class="bp-cell level-head">
+            Palier
+        </div>
+    `;
+
+    for (let i = start; i < start + 10; i++) {
+
+        html += `
+            <div class="bp-cell level-head">
+                ${i+1}
+            </div>
+        `;
+
+    }
+
+    html += `
+        <div class="bp-cell lane">
+            ⚪ GRATUIT
+        </div>
+    `;
+
+    for (let i = start; i < start + 10; i++) {
+
+        html += rewardCard("gratuit",i+1);
+
+    }
+
+    html += `
+        <div class="bp-cell lane premium-lane">
+            👑 PREMIUM
+        </div>
+    `;
+
+    for (let i = start; i < start + 10; i++) {
+
+        html += rewardCard("premium",i+1);
+
+    }
+
+    grid.innerHTML = html;
+
+    document.getElementById("pageLabel").textContent =
+        `Page ${currentPage+1} / 5`;
+
+    document.getElementById("prevPage").disabled =
+        currentPage === 0;
+
+    document.getElementById("nextPage").disabled =
+        currentPage === 4;
+
+}
+
+
+// ==================================================
+// PAGINATION
+// ==================================================
+
+function changePage(direction) {
+
+    currentPage = Math.max(
+        0,
+        Math.min(4,currentPage+direction)
+    );
+
+    renderRewards();
+
+}
+
+
+// ==================================================
+// CHANGEMENT D'ONGLET
+// ==================================================
+
+function openTab(id,button) {
+
+    document.querySelectorAll(".bp-panel").forEach(panel => {
+
+        panel.classList.remove("active");
+
+    });
+
+    document.querySelectorAll(".bp-tab").forEach(tab => {
+
+        tab.classList.remove("active");
+
+    });
+
+    document.getElementById(id).classList.add("active");
+
+    button.classList.add("active");
+
+}
+
+
+// ==================================================
+// RECUPERATION GROUPEE
+// ==================================================
+
+function collectAll() {
+
+    if (!confirm(
+        "Récupérer toutes les récompenses disponibles ?"
+    )) {
+
+        return;
+
+    }
+
+    const form = document.getElementById("collectAllForm");
+
+    document.getElementById("collectPage").value =
+        currentPage + 1;
+
+    form.submit();
+
+}
+
+
+// ==================================================
+// INITIALISATION
+// ==================================================
+
+renderRewards();
+
+</script>
+
+{% endblock %}
